@@ -1,0 +1,9 @@
+venv
+datasets
+archive
+datatest
+processed
+tmp
+.vscode
+.idea
+.idea/**/*
