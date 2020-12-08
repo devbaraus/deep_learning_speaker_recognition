@@ -4,16 +4,17 @@ import tensorflow.keras as keras
 import time
 from utils import load_json_data
 
-DATASET_PATH = 'processed/mfcc/mfcc_parallel.json'
+DATASET_PATH = 'processed/lpc/lpc_parallel.json'
 
-inputs, targets, mapping = load_json_data(DATASET_PATH)
+inputs, targets, mapping = load_json_data(DATASET_PATH, inputs_fieldname='lpc')
 
+print(inputs.shape)
 
 def create_dense_model():
     # build the network architecture
     model = keras.Sequential([
         # input layer
-        keras.layers.Flatten(input_shape=(inputs.shape[1], inputs.shape[2])),
+        # keras.layers.Flatten(input_shape=(inputs.shape[1], inputs.shape[2])),
 
         # 1st hidden layer
         keras.layers.Dense(512, activation='relu'),

@@ -7,8 +7,10 @@
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/datasets" />
       <excludeFolder url="file://$MODULE_DIR$/processed" />
+      <excludeFolder url="file://$MODULE_DIR$/datatest" />
+      <excludeFolder url="file://$MODULE_DIR$/images" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.8" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">
