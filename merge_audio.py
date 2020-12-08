@@ -25,8 +25,9 @@ def process_directory(dir, index):
     signal, sr = [], 22050
 
     for j, audioname in enumerate(f[dir]):
-        holder_signal, _ = librosa.load(f'{mypath}/{dir}/{audioname}', sr=sr)
-        signal.extend(holder_signal)
+        if j < 10:
+            holder_signal, _ = librosa.load(f'{mypath}/{dir}/{audioname}', sr=sr)
+            signal.extend(holder_signal)
 
     signal = np.array(signal)
 
@@ -35,4 +36,4 @@ def process_directory(dir, index):
 
 if __name__ == '__main__':
     m = Parallel(n_jobs=num_cores, verbose=len(f.keys()), temp_folder='./tmp/')(
-        delayed(process_directory)(i, j) for j, i in enumerate(list(f.keys())) if j is not None)
+        delayed(process_directory)(i, j) for j, i in enumerate(list(f.keys())) if j < 1)
