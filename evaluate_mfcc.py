@@ -25,7 +25,7 @@ model.compile(optimizer=optimizer,
 
 _, _, mapping = load_json_data('datatest/datatest_14_14157.json')
 
-person = 'p260'
+person = 'p229'
 
 song_mfccs = []
 
