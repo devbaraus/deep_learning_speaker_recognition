@@ -8,7 +8,7 @@ from utils import get_filenames, process_mfcc
 
 num_cores = multiprocessing.cpu_count()
 
-path = './archive/VCTK-Corpus/VCTK-Corpus/merged'
+path = 'audios/treino'
 
 f = get_filenames(path)
 
@@ -54,7 +54,7 @@ def object_mfcc_to_json(m):
         data['mfcc'].extend(i['mfcc'])
         data['labels'].extend(i['labels'])
 
-    with open('processed/mfcc/mfcc_parallel.json', 'w') as fp:
+    with open('processed/mfcc/mfcc_80treino_parallel.json', 'w') as fp:
         json.dump(data, fp, indent=2)
 
 

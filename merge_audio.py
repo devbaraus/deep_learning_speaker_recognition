@@ -10,7 +10,7 @@ num_cores = multiprocessing.cpu_count()
 f = {}
 
 mypath = './archive/VCTK-Corpus/VCTK-Corpus/wav48'
-destpath = './archive/VCTK-Corpus/VCTK-Corpus/merged'
+destpath = './archive/VCTK-Corpus/VCTK-Corpus/merged_trimmed'
 
 for (_, dirnames, _) in walk(mypath):
     for dir in dirnames:
@@ -25,9 +25,14 @@ def process_directory(dir, index):
     signal, sr = [], 22050
 
     for j, audioname in enumerate(f[dir]):
-        if j < 10:
-            holder_signal, _ = librosa.load(f'{mypath}/{dir}/{audioname}', sr=sr)
-            signal.extend(holder_signal)
+        # if j < 10:
+        holder_signal, _ = librosa.load(f'{mypath}/{dir}/{audioname}', sr=sr)
+
+        intervals = librosa.effects.split(holder_signal, top_db=20)
+
+        audio_temp = holder_signal[intervals[0][0]:intervals[-1][-1]]
+
+        signal.extend(audio_temp)
 
     signal = np.array(signal)
 
@@ -35,5 +40,5 @@ def process_directory(dir, index):
 
 
 if __name__ == '__main__':
-    m = Parallel(n_jobs=num_cores, verbose=len(f.keys()), temp_folder='./tmp/')(
-        delayed(process_directory)(i, j) for j, i in enumerate(list(f.keys())) if j < 1)
+    m = Parallel(n_jobs=num_cores, verbose=len(f.keys()))(
+        delayed(process_directory)(i, j) for j, i in enumerate(list(f.keys())))

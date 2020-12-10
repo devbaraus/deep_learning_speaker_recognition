@@ -7,3 +7,6 @@ tmp
 .vscode
 .idea
 images
+models
+models/**/*
+audios

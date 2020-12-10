@@ -8,7 +8,7 @@ from utils import get_filenames, process_lpc
 
 num_cores = multiprocessing.cpu_count() // 2
 
-path = './archive/VCTK-Corpus/VCTK-Corpus/merged'
+path = './archive/VCTK-Corpus/VCTK-Corpus/merged_teste'
 
 f = get_filenames(path)
 
@@ -59,6 +59,6 @@ def object_mfcc_to_json(m):
 
 
 if __name__ == '__main__':
-    m = Parallel(n_jobs=num_cores, verbose=len(f), temp_folder='./tmp/')(
+    m = Parallel(n_jobs=num_cores, verbose=len(f))(
         delayed(process_directory)(i, j) for j, i in enumerate(f) if i is not None)
     object_mfcc_to_json(m)
