@@ -4,11 +4,11 @@ import librosa
 import numpy as np
 import multiprocessing
 import json
-from utils import get_filenames, process_mfcc
+from utils import get_filenames, process_mfcc, create_directory
 
 num_cores = multiprocessing.cpu_count()
 
-path = 'audios/treino'
+path = 'audios/inferencia'
 
 f = get_filenames(path)
 
@@ -54,7 +54,9 @@ def object_mfcc_to_json(m):
         data['mfcc'].extend(i['mfcc'])
         data['labels'].extend(i['labels'])
 
-    with open('processed/mfcc/mfcc_80treino_parallel.json', 'w') as fp:
+    create_directory('processed/mfcc')
+
+    with open('processed/mfcc/mfcc_80inferencia_parallel.json', 'w') as fp:
         json.dump(data, fp, indent=2)
 
 

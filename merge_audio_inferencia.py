@@ -5,12 +5,17 @@ import multiprocessing
 import soundfile as sf
 import librosa
 
+from utils import create_directory
+
 num_cores = multiprocessing.cpu_count()
 
 f = {}
 
 mypath = './archive/VCTK-Corpus/VCTK-Corpus/wav48'
 destpath = 'audios'
+
+create_directory(f'{destpath}/treino')
+create_directory(f'{destpath}/inferencia')
 
 for (_, dirnames, _) in walk(mypath):
     for dir in dirnames:

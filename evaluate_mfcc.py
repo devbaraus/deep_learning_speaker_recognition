@@ -23,7 +23,8 @@ model.compile(optimizer=optimizer,
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
-_, _, mapping = load_json_data('datatest/datatest_14_14157.json')
+inputs_test, targets_test, mapping = load_json_data('datatest/datatest_14_14157.json')
+inputs_inf, targets_inf, _ = load_json_data('processed/mfcc/mfcc_80inferencia_parallel.json')
 
 person = 'p229'
 
