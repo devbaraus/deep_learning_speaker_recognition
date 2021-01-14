@@ -70,6 +70,7 @@ def process_directory(dir, index):
             # sr, sample = read(f'{mypath}/{dir}/{audioname}')
             sample, sr = librosa.load(f'{mypath}/{dir}/{audioname}')
             sample = sample.astype(np.int16)
+            print(type(sample[0]))
             # sample = sample[:, 0]
 
             # if process_method == 'mfcc':
