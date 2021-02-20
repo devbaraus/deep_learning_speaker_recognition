@@ -8,7 +8,7 @@ from deep_audio import Directory, Audio, JSON
 
 num_cores = multiprocessing.cpu_count()
 
-path = 'audios/inferencia'
+path = 'audios'
 
 f = Directory.filenames(path)
 

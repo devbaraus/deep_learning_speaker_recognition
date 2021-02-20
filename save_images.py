@@ -30,21 +30,23 @@ def process_directory(dir, index):
 
         Visualization.plot_audio(data, rate, title=f'Signal {audioname}',
                                  fig_name=f'images/audio/{dir}/{audioname}.png',
-                                 close=True)
+                                 caption=f'Sample rate {rate}')
         Visualization.plot_spectrogram(data, rate, title=f'Spectrogram {audioname}',
-                                       fig_name=f'images/spectrogram/{dir}/{audioname}.png', close=True)
+                                       fig_name=f'images/spectrogram/{dir}/{audioname}.png', caption='FFT Order 1024.')
         Visualization.plot_cepstrals(mfcc, title=f'MFCC {audioname}', fig_name=f'images/mfcc/{dir}/{audioname}.png',
-                                     y_label='MFCC Index', close=True)
+                                     caption=f'Number of Coefficients {n_mfcc}, Number of filters {n_filts}, FFT Order {n_fft}.',
+                                     y_label='MFCC Index')
         Visualization.plot_cepstrals(lpcc, title=f'LPCC {audioname}', fig_name=f'images/lpcc/{dir}/{audioname}.png',
-                                     y_label='LPCC Index', close=True)
+                                     caption=f'Number of Coefficients {n_lpcc}, Lifter {lifter}, Normalization {normalize}',
+                                     y_label='LPCC Index')
 
         Visualization.plot_subplots(audio=data, mfccs=mfcc, lpccs=lpcc, rate=rate, title=f'{audioname}',
-                                    fig_name=f'images/plots/{dir}/{audioname}.png', close=True)
+                                    fig_name=f'images/plots/{dir}/{audioname}.png')
 
 
 if __name__ == '__main__':
     # for j, i in enumerate(list(f.keys())):
-    #     if j < 2:
+    #     if j < 1:
     #         process_directory(i, j)
 
     m = Parallel(n_jobs=num_cores, verbose=len(f.keys()))(

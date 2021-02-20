@@ -4,13 +4,13 @@ import librosa
 import numpy as np
 import multiprocessing
 import json
-from utils import get_filenames, process_mfcc, create_directory
+from deep_audio import Directory, Audio, JSON
 
 num_cores = multiprocessing.cpu_count()
 
-path = 'audios/inferencia'
+path = 'audios/16000'
 
-f = get_filenames(path)
+f = Directory.filenames(path)
 
 data = {
     "mapping": [],
@@ -20,9 +20,7 @@ data = {
 
 
 def process_directory(dir, index):
-    signal, sr = [], 22050
-
-    signal, _ = librosa.load(f'{path}/{dir}', sr=sr)
+    signal, sr = Audio.read(f'{path}/{dir}', normalize=True)
 
     signal = np.array(signal)
 
@@ -39,7 +37,14 @@ def process_directory(dir, index):
         start_sample = sr * i * 5
         finish_sample = start_sample + (sr * 5)
 
-        mfcc = process_mfcc(signal[start_sample:finish_sample])
+        sample = signal[start_sample:finish_sample]
+
+        # sample = Audio.normalize(sample)
+
+        # mfcc = Audio.mfcc(sample, rate=sr)
+        mfcc = librosa.feature.mfcc(sample, sr=sr, n_mfcc=13, hop_length=512, n_fft=2048, lifter=22)
+
+        # mfcc = mfcc.T
 
         m['mfcc'].append(mfcc.tolist())
 
@@ -54,13 +59,10 @@ def object_mfcc_to_json(m):
         data['mfcc'].extend(i['mfcc'])
         data['labels'].extend(i['labels'])
 
-    create_directory('processed/mfcc')
-
-    with open('processed/mfcc/mfcc_80inferencia_parallel.json', 'w') as fp:
-        json.dump(data, fp, indent=2)
+    JSON.create_json_file('processed/mfcc/mfcc_16000.json', data)
 
 
 if __name__ == '__main__':
-    m = Parallel(n_jobs=num_cores, verbose=len(f), temp_folder='./tmp/')(
+    m = Parallel(n_jobs=num_cores // 2, verbose=len(f), temp_folder='./tmp/')(
         delayed(process_directory)(i, j) for j, i in enumerate(f) if i is not None)
     object_mfcc_to_json(m)

@@ -1,60 +1,27 @@
-import matplotlib.pyplot as plt
-from scipy.io.wavfile import read
-from spafe.utils import vis
-from spafe.features.lpc import lpc, lpcc
-from spafe.features.mfcc import mfcc
+# %% Import dos pacotes
+
+import librosa
 import numpy as np
+from deep_audio import Visualization, Audio
 
-path2='archive/VCTK-Corpus/VCTK-Corpus/wav48/p225/p225_006.wav'; flagMono2 = 1
+# %% Leitura do áudio
 
-sc_srate2, sc_sample2 = read(path2)
-if flagMono2 == 0:
-    # sc_sample2 = sc_sample2[:, 0]
-    sc_sample2 = np.mean(sc_sample2, axis=1, dtype=type(sc_sample2[0]))
+path2 = 'archive/VCTK-Corpus/VCTK-Corpus/wav48/p225/p225_006.wav'
 
-# lb_sample1 = lb_sample1 * 32768
-# lb_sample2 = lb_sample2 * 32768
-# sc_sample1 = sc_sample1 * 32768
-# sc_sample2 = sc_sample2 * 32768
+signal, rate = Audio.read(path2, normalize=False)
+signal2, _ = Audio.read(path2)
 
-
-# MFCC
-num_ceps_MFCC = 40
+# %% MFCC
+num_ceps_MFCC = 13
 nfilts = 512
 nfft = 2048
 
-# LPCC
-num_ceps_LPCC = 27
-lifter = 0
-normalize = False
-
-mfccs2 = mfcc(sig=sc_sample2, fs=sc_srate2, num_ceps=num_ceps_MFCC, nfilts=nfilts, nfft=nfft, pre_emph=0)
-lpccs2 = lpcc(sig=sc_sample2, fs=sc_srate2, num_ceps=num_ceps_LPCC, lifter=lifter, normalize=normalize, pre_emph=0)
-
-##############################
-
-plt.subplot(3, 1, 1)
-plt.title(f'{path2}')
-plt.imshow(mfccs2.T,
-           origin='lower',
-           aspect='auto',
-           cmap='magma',
-           interpolation='nearest')
-plt.xlabel('Frame Index')
-plt.ylabel('MFCC Index')
+mfcc = Audio.mfcc(signal, rate, lifter=22, normalize=0).T
+# librosa.feature.melspectrogram
+librosa.filters.mel
+mfcc1 = librosa.feature.mfcc(signal2, rate, n_mfcc=num_ceps_MFCC, n_fft=nfft, lifter=22)
 
 
-plt.subplot(3, 1, 2)
-plt.plot(sc_sample2)
-
-plt.subplot(3, 1, 3)
-plt.imshow(lpccs2.T,
-           origin='lower',
-           aspect='auto',
-           cmap='magma',
-           interpolation='nearest')
-plt.xlabel('Frame Index')
-plt.ylabel('LPCC Index')
-
-plt.show(block=False)
-plt.close()
+# %% Visualização
+Visualization.plot_cepstrals(mfcc, show=True, close=True)
+Visualization.plot_cepstrals(mfcc1.T, show=True, close=True)

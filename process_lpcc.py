@@ -4,17 +4,17 @@ import librosa
 import numpy as np
 import multiprocessing
 import json
-from deep_audio import Directory, Audio
+from deep_audio import Directory, Audio, JSON
 
 num_cores = multiprocessing.cpu_count()
 
-path = 'audios/inferencia'
+path = 'audios'
 
 f = Directory.filenames(path)
 
 data = {
     "mapping": [],
-    "mfcc": [],
+    "lpcc": [],
     "labels": []
 }
 
@@ -29,7 +29,7 @@ def process_directory(dir, index):
     segments = len(signal) // (sr * 5)
 
     m = {
-        "mfcc": [],
+        "lpcc": [],
         "labels": [index] * segments
     }
 
@@ -37,28 +37,25 @@ def process_directory(dir, index):
         start_sample = sr * i * 5
         finish_sample = start_sample + (sr * 5)
 
-        mfcc = Audio.mfcc(signal[start_sample:finish_sample])
+        lpcc = Audio.lpcc(signal[start_sample:finish_sample])
 
-        m['mfcc'].append(mfcc.tolist())
+        m['lpcc'].append(lpcc.tolist())
 
     print(f'{dir} -> segments: {segments}')
     return m
 
 
-def object_mfcc_to_json(m):
+def object_lpcc_to_json(m):
     data['mapping'] = [file.replace('.wav', '') for file in f]
 
     for i in m:
-        data['mfcc'].extend(i['mfcc'])
+        data['lpcc'].extend(i['lpcc'])
         data['labels'].extend(i['labels'])
 
-    Directory.create_directory('processed/mfcc')
-
-    with open('processed/mfcc/mfcc_80inferencia_parallel.json', 'w') as fp:
-        json.dump(data, fp, indent=2)
+    JSON.create_json_file('processed/lpcc/lpcc_80.json', data)
 
 
 if __name__ == '__main__':
     m = Parallel(n_jobs=num_cores, verbose=len(f), temp_folder='./tmp/')(
         delayed(process_directory)(i, j) for j, i in enumerate(f) if i is not None)
-    object_mfcc_to_json(m)
+    object_lpcc_to_json(m)
