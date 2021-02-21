@@ -10,3 +10,5 @@ images
 models
 models/**/*
 audios
+english-multispeaker-corpus-for-voice-cloning.zip
+__pycache__/
