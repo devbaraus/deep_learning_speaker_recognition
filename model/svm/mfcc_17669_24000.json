@@ -1,0 +1,28 @@
+{
+  "train_test": [
+    14135,
+    3534
+  ],
+  "score_train": 0.9999292536257517,
+  "score_test": 0.9385964912280702,
+  "accuracy": 0.9385964912280702,
+  "f1_micro": 0.9385964912280702,
+  "f1_macro": 0.9359822217958047,
+  "params": {
+    "C": 10,
+    "break_ties": false,
+    "cache_size": 200,
+    "class_weight": null,
+    "coef0": 0.0,
+    "decision_function_shape": "ovo",
+    "degree": 3,
+    "gamma": "scale",
+    "kernel": "rbf",
+    "max_iter": -1,
+    "probability": false,
+    "random_state": null,
+    "shrinking": true,
+    "tol": 0.001,
+    "verbose": false
+  }
+}
