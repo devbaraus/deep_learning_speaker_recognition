@@ -1,9 +1,0 @@
-{
-  "score_train": 0.9312071237382874,
-  "score_test": 0.9421901056142301,
-  "best_params": {
-    "C": 10,
-    "decision_function_shape": "ovo",
-    "kernel": "rbf"
-  }
-}

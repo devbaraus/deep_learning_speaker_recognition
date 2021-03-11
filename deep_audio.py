@@ -11,7 +11,37 @@ from scipy.io.wavfile import read, write
 class Visualization:
 
     @staticmethod
-    def plot_audio(data, rate, title=None, x_label='Time (s)', y_label='Sound Wave', size=(10, 6), caption=None,
+    def plot(data, title=None, x_label='Time (s)', y_label='Amplitude', size=(10, 6), caption=None,
+             fig_name=None,
+             show=False,
+             close=True):
+
+        if size:
+            plt.figure(figsize=(10, 6), frameon=True)
+
+        plt.plot(list(range(0, len(data))), data)
+        plt.ylabel(y_label)
+        plt.xlabel(x_label)
+        plt.title(title)
+        # Remove a margem no eixo x
+        plt.margins(x=0)
+
+        if caption:
+            plt.figtext(0.5, 0.01, caption, wrap=True,
+                        horizontalalignment='center')
+
+        if fig_name:
+            Directory.create_directory(fig_name, True)
+            plt.savefig(fig_name, transparent=False)
+
+        if show:
+            plt.show()
+
+        if close:
+            plt.close()
+
+    @staticmethod
+    def plot_audio(data, rate, title=None, x_label='Time (s)', y_label='Amplitude', size=(10, 6), caption=None,
                    fig_name=None,
                    show=False,
                    close=True):
@@ -28,11 +58,12 @@ class Visualization:
         plt.margins(x=0)
 
         if caption:
-            plt.figtext(0.5, 0.01, caption, wrap=True, horizontalalignment='center')
+            plt.figtext(0.5, 0.01, caption, wrap=True,
+                        horizontalalignment='center')
 
         if fig_name:
             Directory.create_directory(fig_name, True)
-            plt.savefig(fig_name)
+            plt.savefig(fig_name, transparent=False)
 
         if show:
             plt.show()
@@ -52,11 +83,12 @@ class Visualization:
         plt.xlabel(x_label)
 
         if caption:
-            plt.figtext(0.5, 0.01, caption, wrap=True, horizontalalignment='center')
+            plt.figtext(0.5, 0.01, caption, wrap=True,
+                        horizontalalignment='center')
 
         if fig_name:
             Directory.create_directory(fig_name, True)
-            plt.savefig(fig_name)
+            plt.savefig(fig_name, transparent=False)
 
         if show:
             plt.show()
@@ -84,11 +116,12 @@ class Visualization:
         # plt.clim(vmin, vmax)
 
         if caption:
-            plt.figtext(0.5, 0.01, caption, wrap=True, horizontalalignment='center')
+            plt.figtext(0.5, 0.01, caption, wrap=True,
+                        horizontalalignment='center')
 
         if fig_name:
             Directory.create_directory(fig_name, True)
-            plt.savefig(fig_name)
+            plt.savefig(fig_name, transparent=False)
 
         if show:
             plt.show()
@@ -105,36 +138,48 @@ class Visualization:
 
         image_size = (10 * size_multiplier, 6 * size_multiplier)
 
-        plt.rc('font', size=small_size * size_multiplier)  # controls default text sizes
-        plt.rc('axes', titlesize=small_size * size_multiplier)  # fontsize of the axes title
-        plt.rc('axes', labelsize=medium_size * size_multiplier)  # fontsize of the x and y labels
-        plt.rc('xtick', labelsize=small_size * size_multiplier)  # fontsize of the tick labels
-        plt.rc('ytick', labelsize=small_size * size_multiplier)  # fontsize of the tick labels
-        plt.rc('legend', fontsize=small_size * size_multiplier)  # legend fontsize
-        plt.rc('figure', titlesize=bigger_size * size_multiplier)  # fontsize of the figure title
+        # controls default text sizes
+        plt.rc('font', size=small_size * size_multiplier)
+        # fontsize of the axes title
+        plt.rc('axes', titlesize=small_size * size_multiplier)
+        # fontsize of the x and y labels
+        plt.rc('axes', labelsize=medium_size * size_multiplier)
+        # fontsize of the tick labels
+        plt.rc('xtick', labelsize=small_size * size_multiplier)
+        # fontsize of the tick labels
+        plt.rc('ytick', labelsize=small_size * size_multiplier)
+        plt.rc('legend', fontsize=small_size *
+               size_multiplier)  # legend fontsize
+        # fontsize of the figure title
+        plt.rc('figure', titlesize=bigger_size * size_multiplier)
 
         plt.subplots(2, 2, figsize=image_size)
-        plt.subplots_adjust(left=0.125, right=0.9, bottom=0.1, top=0.9, wspace=0.3, hspace=0.3)
+        plt.subplots_adjust(left=0.125, right=0.9, bottom=0.1,
+                            top=0.9, wspace=0.3, hspace=0.3)
         plt.suptitle(title)
 
         plt.subplot(2, 2, 1)
         Visualization.plot_audio(audio, rate, close=False, size=None)
 
         plt.subplot(2, 2, 2)
-        Visualization.plot_spectrogram(audio, rate, cmap=cmap, close=False, size=None)
+        Visualization.plot_spectrogram(
+            audio, rate, cmap=cmap, close=False, size=None)
 
         plt.subplot(2, 2, 3)
-        Visualization.plot_cepstrals(data=lpccs, y_label='LPCC Index', cmap=cmap, size=None, close=False)
+        Visualization.plot_cepstrals(
+            data=lpccs, y_label='LPCC Index', cmap=cmap, size=None, close=False)
 
         plt.subplot(2, 2, 4)
-        Visualization.plot_cepstrals(data=mfccs, y_label='MFCC Index', cmap=cmap, size=None, close=False)
+        Visualization.plot_cepstrals(
+            data=mfccs, y_label='MFCC Index', cmap=cmap, size=None, close=False)
 
         if caption:
-            plt.figtext(0.5, 0.01, caption, wrap=True, horizontalalignment='center')
+            plt.figtext(0.5, 0.01, caption, wrap=True,
+                        horizontalalignment='center')
 
         if fig_name:
             Directory.create_directory(fig_name, True)
-            plt.savefig(fig_name)
+            plt.savefig(fig_name, transparent=False)
 
         if show:
             plt.show()
