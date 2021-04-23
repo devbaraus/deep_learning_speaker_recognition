@@ -37,10 +37,10 @@ def process_directory(dir, index):
         start_sample = sr * i * 5
         finish_sample = start_sample + (sr * 5)
 
-        mfcc = Audio.mfcc(signal[start_sample:finish_sample])
+        mfcc = librosa.features.mfcc(signal[start_sample:finish_sample])
         lpcc = Audio.lpcc(signal[start_sample:finish_sample])
 
-        data = np.concatenate((mfcc, lpcc), axis=0)
+        data = np.concatenate((mfcc, lpcc.T), axis=0)
 
         m['data'].append(data.tolist())
 
