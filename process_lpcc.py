@@ -37,7 +37,9 @@ def process_directory(dir, index):
         start_sample = sr * i * 5
         finish_sample = start_sample + (sr * 5)
 
-        lpcc = Audio.lpcc(signal[start_sample:finish_sample])
+        sample = signal[start_sample:finish_sample]
+
+        lpcc = librosa.lpc(sample, 4)
 
         m['lpcc'].append(lpcc.tolist())
 

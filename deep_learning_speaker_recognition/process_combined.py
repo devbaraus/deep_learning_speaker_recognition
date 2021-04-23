@@ -4,25 +4,23 @@ import librosa
 import numpy as np
 import multiprocessing
 import json
-from utils import get_filenames, process_lpc
+from deep_audio import Directory, Audio, JSON
 
-num_cores = multiprocessing.cpu_count() // 2
+num_cores = multiprocessing.cpu_count()
 
-path = './archive/VCTK-Corpus/VCTK-Corpus/merged_teste'
+path = 'audios'
 
-f = get_filenames(path)
+f = Directory.filenames(path)
 
 data = {
     "mapping": [],
-    "lpc": [],
+    "data": [],
     "labels": []
 }
 
 
 def process_directory(dir, index):
-    signal, sr = [], 22050
-
-    signal, _ = librosa.load(f'{path}/{dir}', sr=sr)
+    signal, sr = Audio.read(f'{path}/{dir}')
 
     signal = np.array(signal)
 
@@ -31,7 +29,7 @@ def process_directory(dir, index):
     segments = len(signal) // (sr * 5)
 
     m = {
-        "lpc": [],
+        "data": [],
         "labels": [index] * segments
     }
 
@@ -39,26 +37,28 @@ def process_directory(dir, index):
         start_sample = sr * i * 5
         finish_sample = start_sample + (sr * 5)
 
-        lpc = process_lpc(signal[start_sample:finish_sample])
+        mfcc = librosa.features.mfcc(signal[start_sample:finish_sample])
+        lpcc = Audio.lpcc(signal[start_sample:finish_sample])
 
-        m['lpc'].append(lpc.tolist())
+        data = np.concatenate((mfcc, lpcc.T), axis=0)
+
+        m['data'].append(data.tolist())
 
     print(f'{dir} -> segments: {segments}')
     return m
 
 
-def object_mfcc_to_json(m):
+def object_data_to_json(m):
     data['mapping'] = [file.replace('.wav', '') for file in f]
 
     for i in m:
-        data['lpc'].extend(i['lpc'])
+        data['data'].extend(i['data'])
         data['labels'].extend(i['labels'])
 
-    with open('processed/lpc/lpc_22050.json', 'w') as fp:
-        json.dump(data, fp, indent=2)
+    JSON.create_json_file('processed/combined/data_80.json', data)
 
 
 if __name__ == '__main__':
-    m = Parallel(n_jobs=num_cores, verbose=len(f))(
+    m = Parallel(n_jobs=num_cores, verbose=len(f), temp_folder='./tmp/')(
         delayed(process_directory)(i, j) for j, i in enumerate(f) if i is not None)
-    object_mfcc_to_json(m)
+    object_data_to_json(m)
