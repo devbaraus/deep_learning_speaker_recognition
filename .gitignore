@@ -5,7 +5,7 @@ datatest
 processed
 tmp
 .vscode
-.idea
+.idea/
 images
 models
 model/**/*
