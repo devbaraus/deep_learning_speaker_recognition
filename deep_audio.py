@@ -8,6 +8,13 @@ import numpy as np
 from scipy.io.wavfile import read, write
 
 
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
+
+
 class Visualization:
 
     @staticmethod
@@ -395,4 +402,4 @@ class JSON:
         Directory.create_directory(directory)
 
         with open(file, "w") as fp:
-            json.dump(data, fp, indent=indent)
+            json.dump(data, fp, indent=indent, cls=NumpyEncoder)
