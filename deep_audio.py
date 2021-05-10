@@ -1,7 +1,5 @@
 import json
 import os
-from spafe.features.mfcc import mfcc
-from spafe.features.lpc import lpcc, lpc
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
@@ -261,40 +259,46 @@ class Audio:
         return data
 
     @staticmethod
-    def mfcc(data,
-             rate=48000,
-             n_mfcc=13,
-             pre_emph=0,
-             pre_emph_coeff=0.97,
-             win_len=0.025,
-             win_hop=0.01,
-             win_type="hamming",
-             n_filts=2048,
-             n_fft=512,
-             low_freq=None,
-             high_freq=None,
-             scale="constant",
-             dct_type=2,
-             use_energy=False,
-             lifter=22,
-             normalize=1):
-        return mfcc(sig=data,
-                    fs=rate,
-                    num_ceps=n_mfcc,
-                    pre_emph=pre_emph,
-                    pre_emph_coeff=pre_emph_coeff,
-                    win_len=win_len,
-                    win_hop=win_hop,
-                    win_type=win_type,
-                    nfilts=n_filts,
-                    nfft=n_fft,
-                    low_freq=low_freq,
-                    high_freq=high_freq,
-                    scale=scale,
-                    dct_type=dct_type,
-                    use_energy=use_energy,
-                    lifter=lifter,
-                    normalize=normalize)
+    def librosa_mfcc(**kwargs):
+        return librosa.feature.mfcc(**kwargs)
+
+    @staticmethod
+    def psf_mfcc(**kwargs):
+        return python_speech_features.mfcc(**kwargs)
+
+    @staticmethod
+    def spafe_mfcc(**kwargs):
+        return spafe.features.mfcc.mfcc(**kwargs)
+
+    @staticmethod
+    def torchaudio_mfcc(**kwargs):
+        return torchaudio.transforms.MFCC(**kwargs)
+
+    @staticmethod
+    def tensorflow_mfcc(signal, rate, win_length, hop_length, n_ftt, fmin, fmax, n_mels, n_mfcc):
+        stfts = tf.signal.stft(signal, frame_length=win_length,
+                               frame_step=hop_length,                  fft_length=n_fft)
+        spectrograms = tf.abs(stfts)
+
+        # Warp the linear scale spectrograms into the mel-scale.
+        num_spectrogram_bins = stfts.shape[-1]
+        lower_edge_hertz, upper_edge_hertz, num_mel_bins = fmin, fmax, n_mels
+        linear_to_mel_weight_matrix = tf.signal.linear_to_mel_weight_matrix(
+            num_mel_bins, num_spectrogram_bins, rate, lower_edge_hertz,
+            upper_edge_hertz)
+        mel_spectrograms = tf.tensordot(
+            spectrograms, linear_to_mel_weight_matrix, 1)
+        mel_spectrograms.set_shape(spectrograms.shape[:-1].concatenate(
+            linear_to_mel_weight_matrix.shape[-1:]))
+
+        # Compute a stabilized log to get log-magnitude mel-scale spectrograms.
+        log_mel_spectrograms = tf.math.log(mel_spectrograms + 1e-6)
+
+        # Compute MFCCs from log_mel_spectrograms and take the first 13.
+        mfccTemp = tf.signal.mfccs_from_log_mel_spectrograms(
+            log_mel_spectrograms)[..., :n_mfcc]
+
+        return np.array(mfccTemp)
 
     @staticmethod
     def lpcc(data,
@@ -396,10 +400,10 @@ class Directory:
 
 class JSON:
     @staticmethod
-    def create_json_file(file, data, indent=2):
+    def create_json_file(file, data, indent=2, cls=None):
         directory = '/'.join(file.split('/')[:-1])
 
         Directory.create_directory(directory)
 
         with open(file, "w") as fp:
-            json.dump(data, fp, indent=indent, cls=NumpyEncoder)
+            json.dump(data, fp, indent=indent, cls=cls)
