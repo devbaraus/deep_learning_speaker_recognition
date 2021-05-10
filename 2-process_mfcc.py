@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[7]:
+# In[1]:
 
 
 from os import walk
@@ -21,7 +21,7 @@ import json
 from deep_audio import Directory, JSON, Audio, NumpyEncoder
 
 
-# In[8]:
+# In[2]:
 
 
 num_cores = multiprocessing.cpu_count()
@@ -33,7 +33,7 @@ path = f'audios/{sampling_rate}'
 f = Directory.filenames(path)
 
 
-# In[9]:
+# In[3]:
 
 
 def process_directory(dir, index, library):
@@ -84,11 +84,18 @@ def process_directory(dir, index, library):
                                             win_type='hamming', normalize=1, lifter=lifter, win_len=win_len,
                                             win_hop=win_hop, low_freq=fmin, high_freq=fmax, use_energy=append_Energy)
 
-        elif library == 'torchaudio':
+        elif library == 'torchaudio_textbook':
             melkwargs = {"n_fft": n_fft, "n_mels": n_mels, "hop_length": hop_length, "f_min": fmin, "f_max": fmax}
 
             mfcc = torchaudio.transforms.MFCC(sample_rate=rate, n_mfcc=n_mfcc,
                                               dct_type=2, norm='ortho', log_mels=True, melkwargs=melkwargs)(
+                torch.from_numpy(sample))
+            
+        elif library == 'torchaudio_librosa':
+            melkwargs = {"n_fft": n_fft, "n_mels": n_mels, "hop_length": hop_length, "f_min": fmin, "f_max": fmax}
+
+            mfcc = torchaudio.transforms.MFCC(sample_rate=rate, n_mfcc=n_mfcc,
+                                              dct_type=2, norm='ortho', log_mels=False, melkwargs=melkwargs)(
                 torch.from_numpy(sample))
 
         elif library == 'psf':
@@ -128,7 +135,7 @@ def process_directory(dir, index, library):
     return m
 
 
-# In[10]:
+# In[4]:
 
 
 def object_mfcc_to_json(m, library):
@@ -162,8 +169,7 @@ if __name__ == '__main__':
     #
     #     object_mfcc_to_json(m, library)
 
-    for library in ['psf', 'torchaudio', 'tensorflow', 'spafe']:
-    # for library in ['librosa', 'psf', 'torchaudio', 'tensorflow', 'spafe']:
+    for library in ['torchaudio_librosa', 'torchaudio_textbook', 'librosa', 'psf', 'tensorflow', 'spafe']:
         m = Parallel(n_jobs=num_cores // 2, verbose=len(f))(
             delayed(process_directory)(i, j, library) for j, i in enumerate(f))
         object_mfcc_to_json(m, library)

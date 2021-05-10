@@ -18,7 +18,7 @@ method_algo = 'mfcc'
 n_rate = 24000
 
 
-for library in ['psf', 'spafe', 'tensorflow', 'torchaudio']:
+for library in ['librosa', 'psf', 'spafe', 'tensorflow', 'torchaudio_textbook', 'torchaudio_librosa']:
 
     DATASET_PATH = f'processed/{method_algo}/{library}/{method_algo}_{n_rate}.json'
 
