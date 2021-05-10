@@ -68,7 +68,7 @@ for library in ['librosa', 'psf', 'spafe', 'tensorflow', 'torchaudio_textbook', 
         return model
 
     kc = KerasClassifier(build_fn=build_model,
-                         epochs=50, batch_size=64, verbose=1, )
+                         epochs=2000, batch_size=128, verbose=1, )
 
     param_grid = {}
 
