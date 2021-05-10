@@ -10,7 +10,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-from deep_audio import Directory, JSON
+from deep_audio import Directory, JSON, NumpyEncoder
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 
 
@@ -18,7 +18,7 @@ method_algo = 'mfcc'
 n_rate = 24000
 
 
-for library in ['librosa', 'spf']:
+for library in ['psf', 'spafe', 'tensorflow', 'torchaudio']:
 
     DATASET_PATH = f'processed/{method_algo}/{library}/{method_algo}_{n_rate}.json'
 
@@ -68,7 +68,7 @@ for library in ['librosa', 'spf']:
         return model
 
     kc = KerasClassifier(build_fn=build_model,
-                         epochs=2000, batch_size=128, verbose=1, )
+                         epochs=50, batch_size=64, verbose=1, )
 
     param_grid = {}
 
@@ -89,6 +89,7 @@ for library in ['librosa', 'spf']:
     dump_info = {
         'method': 'Perceptron',
         'seed': random_state,
+        'library': library,
         'feature_method': method_algo,
         'sample_rate': sampling_rate,
         'train_test': [len(X_train), len(X_valid), len(X_test)],
@@ -103,7 +104,7 @@ for library in ['librosa', 'spf']:
     }
 
     JSON.create_json_file(
-        f'tests/perceptron/{library}/{method_algo}/info.json', dump_info)
+        f'tests/perceptron/{library}/{method_algo}/info.json', dump_info, cls=NumpyEncoder)
 
     x_holder = []
 
@@ -131,11 +132,11 @@ for library in ['librosa', 'spf']:
 
     best_params = model.best_params_
 
-    score_valid = model.score(x_valid, y_valid)
+    score_test = model.score(X_test, y_test)
 
-    score_train = model.score(x_train, y_train)
+    score_train = model.score(X_train, y_train)
 
-    y_hat = model.predict(x_test)
+    y_hat = model.predict(X_test)
 
     # SALVA ACURÁCIAS E PARAMETROS
     dump_info = {
@@ -144,9 +145,9 @@ for library in ['librosa', 'spf']:
         'library': library,
         'feature_method': method_algo,
         'sample_rate': sampling_rate,
-        'train_test': [len(x_train), len(x_test)],
+        'train_test': [len(X_train), len(X_test)],
         'score_train': score_train,
-        'score_valid': score_valid,
+        'score_test': score_test,
         'f1_micro': f1_score(y_hat, y_test, average='micro'),
         'f1_macro': f1_score(y_hat, y_test, average='macro'),
         'model_file': f'acc{f1_score(y_hat, y_test, average="macro")}_seed{random_state}.sav',
@@ -155,4 +156,4 @@ for library in ['librosa', 'spf']:
     }
 
     JSON.create_json_file(
-        f'tests/svm/{library}/{method_algo}/info.json', dump_info)
+        f'tests/svm/{library}/{method_algo}/info.json', dump_info, cls=NumpyEncoder)

@@ -1,0 +1,75 @@
+{
+  "method": "Grid Search Support Vector Machines",
+  "seed": 42,
+  "library": "psf",
+  "feature_method": "mfcc",
+  "sample_rate": 24000,
+  "train_test": [
+    5123,
+    1281
+  ],
+  "score_train": 1.0,
+  "score_test": 0.9586260733801717,
+  "f1_micro": 0.9586260733801717,
+  "f1_macro": 0.9578212592957994,
+  "model_file": "acc0.9578212592957994_seed42.sav",
+  "params": {
+    "C": 10,
+    "decision_function_shape": "ovo",
+    "kernel": "linear"
+  },
+  "cv_results": {
+    "mean_fit_time": [
+      113.8064833164215
+    ],
+    "std_fit_time": [
+      0.4819370457763444
+    ],
+    "mean_score_time": [
+      21.262290811538698
+    ],
+    "std_score_time": [
+      0.2843541273376651
+    ],
+    "param_C": [
+      10
+    ],
+    "param_decision_function_shape": [
+      "ovo"
+    ],
+    "param_kernel": [
+      "linear"
+    ],
+    "params": [
+      {
+        "C": 10,
+        "decision_function_shape": "ovo",
+        "kernel": "linear"
+      }
+    ],
+    "split0_test_score": [
+      0.9502439024390243
+    ],
+    "split1_test_score": [
+      0.9570731707317073
+    ],
+    "split2_test_score": [
+      0.9326829268292683
+    ],
+    "split3_test_score": [
+      0.9580078125
+    ],
+    "split4_test_score": [
+      0.939453125
+    ],
+    "mean_test_score": [
+      0.9474921875
+    ],
+    "std_test_score": [
+      0.009938674674473619
+    ],
+    "rank_test_score": [
+      1
+    ]
+  }
+}
