@@ -120,9 +120,10 @@ for library in ['librosa', 'psf', 'spafe', 'tensorflow', 'torchaudio_textbook', 
                                                         random_state=random_state)
 
     param_grid = {
-        'C': [10],
-        'kernel': ['linear'],
-        'decision_function_shape': ['ovo']
+        'C': [0.1, 1, 10, 100, 1000],
+        # 'gamma': [1, 0.1, 0.01, 0.001, 0.0001],
+        'kernel': ['linear', 'rbf', 'poly'],
+        'decision_function_shape': ['ovo', 'ovr']
     }
 
     model = GridSearchCV(svm.SVC(), param_grid, cv=5,
