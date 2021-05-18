@@ -110,8 +110,8 @@ if __name__ == '__main__':
     #         object_mfcc_to_json(m, library)
 
     for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
-        m = Parallel(n_jobs=num_cores // 2, verbose=len(f))(
-            delayed(process_directory)(i, j, library) for j, i in enumerate(f) if j < 4)
+        m = Parallel(n_jobs=num_cores, verbose=len(f))(
+            delayed(process_directory)(i, j, library) for j, i in enumerate(f))
         object_mfcc_to_json(m, library)
 
 
