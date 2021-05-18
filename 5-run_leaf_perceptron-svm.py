@@ -3,18 +3,15 @@
 
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report, f1_score, accuracy_score
+from sklearn.metrics import f1_score
 import tensorflow.keras as keras
 from sklearn import svm
-import time
 import numpy as np
-import matplotlib.pyplot as plt
-import math
 from deep_audio import Directory, JSON, NumpyEncoder
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 
 
-method_algo = 'leaf'
+method_algo = 'mfcc'
 n_rate = 24000
 
 runprocesses = ['perceptron', 'svm']
@@ -22,7 +19,7 @@ runprocesses = ['perceptron', 'svm']
 
 for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
 
-    DATASET_PATH = f'processed/{method_algo}/{library}_{n_rate}.json'
+    DATASET_PATH = f'processed/leaf/{library}_{n_rate}.json'
 
     X, y, mapping = Directory.load_json_data(
         DATASET_PATH, inputs_fieldname=method_algo)

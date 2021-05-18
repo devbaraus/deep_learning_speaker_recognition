@@ -4,13 +4,11 @@
 # In[1]:
 
 
-from os import walk
 from joblib import Parallel, delayed
 import numpy as np
 import multiprocessing
 import tensorflow as tf
 import leaf_audio.frontend as frontend
-import json
 from deep_audio import Directory, JSON, Audio, NumpyEncoder
 
 
@@ -30,7 +28,8 @@ f = Directory.filenames(path)
 
 
 def process_directory(dir, index, library):
-    signal, rate = Audio.read(f'{path}/{dir}', sr=sampling_rate, normalize=True)
+    signal, rate = Audio.read(
+        f'{path}/{dir}', sr=sampling_rate, normalize=True)
 
     signal = np.array(signal)
 
@@ -49,7 +48,7 @@ def process_directory(dir, index, library):
 
         sample = signal[start_sample:finish_sample]
         sample = sample[tf.newaxis, :]
-                
+
         if library == 'leaf':
             leaf = frontend.Leaf()
             mfcc = leaf(sample)
@@ -65,7 +64,7 @@ def process_directory(dir, index, library):
         elif library == 'sincnetplus':
             sincnet_plus = frontend.SincNetPlus()
             mfcc = sincnet_plus(sample)
-        
+
         mfcc = np.array(mfcc).T
 
         m['mfcc'].append(mfcc.tolist())
@@ -92,7 +91,8 @@ def object_mfcc_to_json(m, library):
 
     print('Writing')
 
-    JSON.create_json_file(f'processed/leaf/{library}_{sampling_rate}.json', data, cls=NumpyEncoder)
+    JSON.create_json_file(
+        f'processed/leaf/{library}_{sampling_rate}.json', data, cls=NumpyEncoder)
 
     del data
 
@@ -101,13 +101,13 @@ def object_mfcc_to_json(m, library):
 
 
 if __name__ == '__main__':
-#     for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
-#         m = []
-#         for j, i in enumerate(f):
-#             if j  < 5:
-#                 m.append(process_directory(i, j, library))
-    
-#         object_mfcc_to_json(m, library)
+    #     for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
+    #         m = []
+    #         for j, i in enumerate(f):
+    #             if j  < 5:
+    #                 m.append(process_directory(i, j, library))
+
+    #         object_mfcc_to_json(m, library)
 
     for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
         m = Parallel(n_jobs=num_cores // 2, verbose=len(f))(
@@ -118,11 +118,4 @@ if __name__ == '__main__':
 # In[ ]:
 
 
-
-
-
 # In[ ]:
-
-
-
-

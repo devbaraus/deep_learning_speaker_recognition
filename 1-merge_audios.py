@@ -8,10 +8,8 @@ from os import walk
 from joblib import Parallel, delayed
 import numpy as np
 import multiprocessing
-import soundfile as sf
 import librosa
-import scipy
-from deep_audio import Directory, Audio
+from deep_audio import Audio
 
 
 # In[6]:
@@ -23,9 +21,6 @@ f = {}
 
 mypath = './archive/VCTK-Corpus/VCTK-Corpus/wav48'
 destpath = f'audios'
-
-# Directory.create_directory(f'{destpath}/treino')
-# Directory.create_directory(f'{destpath}/inferencia')
 
 for (_, dirnames, _) in walk(mypath):
     for dir in dirnames:
@@ -44,7 +39,8 @@ def process_directory(dir, n_rate):
 
     for j, audioname in enumerate(f[dir]):
         # if j < 10:
-        holder_signal, sr = Audio.read(f'{mypath}/{dir}/{audioname}', sr=n_rate)
+        holder_signal, sr = Audio.read(
+            f'{mypath}/{dir}/{audioname}', sr=n_rate)
 
         intervals = librosa.effects.split(holder_signal, top_db=20)
 
@@ -66,4 +62,3 @@ if __name__ == '__main__':
     #         process_directory(i, j)
     m = Parallel(n_jobs=num_cores, verbose=len(f.keys()))(
         delayed(process_directory)(i, rate) for j, i in enumerate(list(f.keys())) for rate in [24000])
-

@@ -4,7 +4,6 @@
 # In[1]:
 
 
-from os import walk
 from joblib import Parallel, delayed
 import librosa
 import python_speech_features
@@ -17,7 +16,6 @@ import torchaudio.transforms
 import torch
 import spafe.features.mfcc
 import tensorflow as tf
-import json
 from deep_audio import Directory, JSON, Audio, NumpyEncoder
 
 
@@ -37,7 +35,8 @@ f = Directory.filenames(path)
 
 
 def process_directory(dir, index, library):
-    signal, rate = Audio.read(f'{path}/{dir}', sr=sampling_rate, normalize=True)
+    signal, rate = Audio.read(
+        f'{path}/{dir}', sr=sampling_rate, normalize=True)
 
     signal = np.array(signal)
 
@@ -85,14 +84,16 @@ def process_directory(dir, index, library):
                                             win_hop=win_hop, low_freq=fmin, high_freq=fmax, use_energy=append_Energy)
 
         elif library == 'torchaudio_textbook':
-            melkwargs = {"n_fft": n_fft, "n_mels": n_mels, "hop_length": hop_length, "f_min": fmin, "f_max": fmax}
+            melkwargs = {"n_fft": n_fft, "n_mels": n_mels,
+                         "hop_length": hop_length, "f_min": fmin, "f_max": fmax}
 
             mfcc = torchaudio.transforms.MFCC(sample_rate=rate, n_mfcc=n_mfcc,
                                               dct_type=2, norm='ortho', log_mels=True, melkwargs=melkwargs)(
                 torch.from_numpy(sample))
-            
+
         elif library == 'torchaudio_librosa':
-            melkwargs = {"n_fft": n_fft, "n_mels": n_mels, "hop_length": hop_length, "f_min": fmin, "f_max": fmax}
+            melkwargs = {"n_fft": n_fft, "n_mels": n_mels,
+                         "hop_length": hop_length, "f_min": fmin, "f_max": fmax}
 
             mfcc = torchaudio.transforms.MFCC(sample_rate=rate, n_mfcc=n_mfcc,
                                               dct_type=2, norm='ortho', log_mels=False, melkwargs=melkwargs)(
@@ -153,7 +154,8 @@ def object_mfcc_to_json(m, library):
 
     print('Writing')
 
-    JSON.create_json_file(f'processed/mfcc/{library}/mfcc_{sampling_rate}.json', data, cls=NumpyEncoder)
+    JSON.create_json_file(
+        f'processed/mfcc/{library}/mfcc_{sampling_rate}.json', data, cls=NumpyEncoder)
 
     del data
 
@@ -178,11 +180,4 @@ if __name__ == '__main__':
 # In[ ]:
 
 
-
-
-
 # In[ ]:
-
-
-
-

@@ -3,13 +3,10 @@
 
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report, f1_score, accuracy_score
+from sklearn.metrics import f1_score
 import tensorflow.keras as keras
 from sklearn import svm
-import time
 import numpy as np
-import matplotlib.pyplot as plt
-import math
 from deep_audio import Directory, JSON, NumpyEncoder
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 
