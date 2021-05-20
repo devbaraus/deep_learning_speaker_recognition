@@ -1,4 +1,4 @@
-# pip install lingvo gin gin-config tensorflow sklearn numpy=1.19.5 sklearn
+# pip install lingvo gin gin-config tensorflow sklearn numpy=1.19.5 sklearn matplotlib
 
 python 1-merge_audios.py
 python 2-process_mfcc.py
