@@ -7,7 +7,7 @@
 from joblib import Parallel, delayed
 import numpy as np
 import multiprocessing
-import tensorflow as tf
+from tensorflow import newaxis
 import leaf_audio.frontend as frontend
 from deep_audio import Directory, JSON, Audio, NumpyEncoder
 
@@ -47,7 +47,7 @@ def process_directory(dir, index, library):
         finish_sample = start_sample + (rate * 5)
 
         sample = signal[start_sample:finish_sample]
-        sample = sample[tf.newaxis, :]
+        sample = sample[newaxis, :]
 
         if library == 'leaf':
             leaf = frontend.Leaf()
@@ -68,6 +68,9 @@ def process_directory(dir, index, library):
         mfcc = np.array(mfcc).T
 
         m['mfcc'].append(mfcc.tolist())
+
+        del mfcc
+        del sample
 
     print(f'{dir} -> segments: {segments}')
     return m
@@ -109,10 +112,11 @@ if __name__ == '__main__':
 
     #         object_mfcc_to_json(m, library)
 
-    for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
+    for library in ['melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
         m = Parallel(n_jobs=num_cores, verbose=len(f))(
-            delayed(process_directory)(i, j, library) for j, i in enumerate(f))
+            delayed(process_directory)(i, j, library) for j, i in enumerate(f) if j < 4)
         object_mfcc_to_json(m, library)
+        del m
 
 
 # In[ ]:

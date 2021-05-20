@@ -1,4 +1,5 @@
-# pip install lingvo gin gin-config tensorflow sklearn numpy=1.19.5 sklearn matplotlib
+# sudo apt-get install libsndfile1-dev
+# pip install lingvo gin gin-config tensorflow sklearn numpy=1.19.5 matplotlib librosa tensorflow soundfile librosa python_speech_features torchaudio spafe
 
 python 1-merge_audios.py
 python 2-process_mfcc.py
