@@ -16,8 +16,10 @@ n_rate = 24000
 
 runprocesses = ['perceptron', 'svm']
 
+#['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']
+for library in ['melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
 
-for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
+    print(f"\n\n\n------------- {library} -------------\n\n\n")
 
     DATASET_PATH = f'processed/leaf/{library}_{n_rate}.json'
 
@@ -68,7 +70,7 @@ for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
             return model
 
         kc = KerasClassifier(build_fn=build_model,
-                             epochs=2000, batch_size=128, verbose=1, )
+                             epochs=2000, batch_size=128, verbose=2)
 
         param_grid = {}
 
@@ -98,13 +100,13 @@ for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
             'score_test': score_test,
             'f1_micro': f1_score(y_hat, y_test, average='micro'),
             'f1_macro': f1_score(y_hat, y_test, average='macro'),
-            'model_file': f'acc{score_test}_seed{random_state}.sav',
+            # 'model_file': f'acc{score_test}_seed{random_state}.sav',
             'params': model.best_params_,
             'cv_results': model.cv_results_
         }
 
         JSON.create_json_file(
-            f'tests/perceptron/{library}/{method_algo}/info.json', dump_info, cls=NumpyEncoder)
+            f'tests/perceptron/{library}/info.json', dump_info, cls=NumpyEncoder)
 
     if 'svm' in runprocesses:
         x_holder = []
@@ -157,10 +159,10 @@ for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
             'score_test': score_test,
             'f1_micro': f1_score(y_hat, y_test, average='micro'),
             'f1_macro': f1_score(y_hat, y_test, average='macro'),
-            'model_file': f'acc{f1_score(y_hat, y_test, average="macro")}_seed{random_state}.sav',
+            # 'model_file': f'acc{f1_score(y_hat, y_test, average="macro")}_seed{random_state}.sav',
             'params': model.best_params_,
             'cv_results': model.cv_results_
         }
 
         JSON.create_json_file(
-            f'tests/svm/{library}/{method_algo}/info.json', dump_info, cls=NumpyEncoder)
+            f'tests/svm/{library}/info.json', dump_info, cls=NumpyEncoder)
