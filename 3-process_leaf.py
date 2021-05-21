@@ -114,7 +114,7 @@ if __name__ == '__main__':
 
     for library in ['melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
         m = Parallel(n_jobs=num_cores, verbose=len(f))(
-            delayed(process_directory)(i, j, library) for j, i in enumerate(f) if j < 4)
+            delayed(process_directory)(i, j, library) for j, i in enumerate(f) if j < 65)
         object_mfcc_to_json(m, library)
         del m
 
