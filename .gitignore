@@ -18,3 +18,4 @@ english-multispeaker-corpus-for-voice-cloning.zip
 .ipynb_checkpoints/**/*
 leaf-audio
 .spyproject/
+espnet_model_zoo/

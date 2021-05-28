@@ -7,14 +7,12 @@ from sklearn.metrics import f1_score
 import tensorflow.keras as keras
 from sklearn import svm
 import numpy as np
-from deep_audio import Directory, JSON, NumpyEncoder
+from deep_audio import Directory, JSON, Model
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
-
 
 method_algo = 'mfcc'
 n_rate = 24000
 runprocesses = ['perceptron', 'svm']
-
 
 for library in ['librosa', 'psf', 'spafe', 'tensorflow', 'torchaudio_textbook', 'torchaudio_librosa']:
 
@@ -26,7 +24,6 @@ for library in ['librosa', 'psf', 'spafe', 'tensorflow', 'torchaudio_textbook', 
     random_state = 42
 
     if 'perceptron' in runprocesses:
-
         X_train, X_test, y_train, y_test = train_test_split(X,
                                                             y,
                                                             test_size=0.2,
@@ -38,6 +35,7 @@ for library in ['librosa', 'psf', 'spafe', 'tensorflow', 'torchaudio_textbook', 
                                                               test_size=0.2,
                                                               stratify=y_train,
                                                               random_state=random_state)
+
 
         def build_model():
             # build the network architecture
@@ -66,6 +64,7 @@ for library in ['librosa', 'psf', 'spafe', 'tensorflow', 'torchaudio_textbook', 
 
             return model
 
+
         kc = KerasClassifier(build_fn=build_model,
                              epochs=2000, batch_size=128, verbose=1, )
 
@@ -76,34 +75,23 @@ for library in ['librosa', 'psf', 'spafe', 'tensorflow', 'torchaudio_textbook', 
 
         grid_result = model.fit(X_train, y_train)
 
-        best_params = model.best_params_
         sampling_rate = n_rate
 
         score_test = model.score(X_test, y_test)
         score_valid = model.score(X_valid, y_valid)
         score_train = model.score(X_train, y_train)
 
-        y_hat = model.predict(X_test)
-
-        dump_info = {
-            'method': 'Perceptron',
-            'seed': random_state,
-            'library': library,
-            'feature_method': method_algo,
-            'sample_rate': sampling_rate,
-            'train_test': [len(X_train), len(X_valid), len(X_test)],
-            'score_train': score_train,
-            'score_valid': score_valid,
-            'score_test': score_test,
-            'f1_micro': f1_score(y_hat, y_test, average='micro'),
-            'f1_macro': f1_score(y_hat, y_test, average='macro'),
-            'model_file': f'acc{score_test}_seed{random_state}.sav',
-            'params': model.best_params_,
-            'cv_results': model.cv_results_
-        }
-
-        JSON.create_json_file(
-            f'tests/perceptron/{library}/{method_algo}/info.json', dump_info, cls=NumpyEncoder)
+        Model.dump_grid(
+            f'tests/perceptron/{library}/{method_algo}/info.json',
+            model=model,
+            method='Grid Perceptron',
+            seed=random_state,
+            library=library,
+            sizes=[len(X_train), len(X_valid), len(X_test)],
+            score_train=score_train,
+            score_test=score_test,
+            score_valid=score_valid
+        )
 
     if 'svm' in runprocesses:
 
@@ -132,30 +120,17 @@ for library in ['librosa', 'psf', 'spafe', 'tensorflow', 'torchaudio_textbook', 
 
         model.fit(X_train, y_train)
 
-        best_params = model.best_params_
-
         score_test = model.score(X_test, y_test)
 
         score_train = model.score(X_train, y_train)
 
-        y_hat = model.predict(X_test)
-
-        # SALVA ACURÁCIAS E PARAMETROS
-        dump_info = {
-            'method': 'Grid Search Support Vector Machines',
-            'seed': random_state,
-            'library': library,
-            'feature_method': method_algo,
-            'sample_rate': sampling_rate,
-            'train_test': [len(X_train), len(X_test)],
-            'score_train': score_train,
-            'score_test': score_test,
-            'f1_micro': f1_score(y_hat, y_test, average='micro'),
-            'f1_macro': f1_score(y_hat, y_test, average='macro'),
-            'model_file': f'acc{f1_score(y_hat, y_test, average="macro")}_seed{random_state}.sav',
-            'params': model.best_params_,
-            'cv_results': model.cv_results_
-        }
-
-        JSON.create_json_file(
-            f'tests/svm/{library}/{method_algo}/info.json', dump_info, cls=NumpyEncoder)
+        Model.dump_grid(
+            f'tests/perceptron/{library}/{method_algo}/info.json',
+            model=model,
+            method='Grid Perceptron',
+            seed=random_state,
+            library=library,
+            sizes=[len(X_train), 0, len(X_test)],
+            score_train=score_train,
+            score_test=score_test,
+        )

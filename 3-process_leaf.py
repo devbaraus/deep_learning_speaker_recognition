@@ -1,30 +1,23 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
 from joblib import Parallel, delayed
 import numpy as np
 import multiprocessing
 from tensorflow import newaxis
 import leaf_audio.frontend as frontend
-from deep_audio import Directory, JSON, Audio, NumpyEncoder
-
-
-# In[2]:
-
+from deep_audio import Directory, Audio, Process
 
 num_cores = multiprocessing.cpu_count()
-
 sampling_rate = 24000
-
 path = f'audios/{sampling_rate}'
 
 f = Directory.filenames(path)
 
-
-# In[3]:
+# quantidade de segmentos
+n_segments = 10
+# quantidade de audios
+n_audios = 40
 
 
 def process_directory(dir, index, library):
@@ -33,74 +26,47 @@ def process_directory(dir, index, library):
 
     signal = np.array(signal)
 
+    # arredonda o sinal de audio para multiplo de 5
     signal = signal[:len(signal) - len(signal) % (rate * 5)]
 
+    # avalia quantos segmentos têm em uma audio
     segments = len(signal) // (rate * 5)
 
     m = {
-        "mfcc": [],
-        "labels": [index] * segments
+        'attrs': [],
+        'labels': [index] * segments
     }
 
     for i in range(segments):
-        start_sample = rate * i * 5
-        finish_sample = start_sample + (rate * 5)
+        if n_segments and i >= n_segments:
+            continue
 
-        sample = signal[start_sample:finish_sample]
+        sample = Audio.segment(signal, rate, seconds=5, window=i)
         sample = sample[newaxis, :]
 
         if library == 'leaf':
             leaf = frontend.Leaf()
-            mfcc = leaf(sample)
+            attr = leaf(sample)
         elif library == 'melbanks':
             melfbanks = frontend.MelFilterbanks()
-            mfcc = melfbanks(sample)
+            attr = melfbanks(sample)
         elif library == 'tfbanks':
             tfbanks = frontend.TimeDomainFilterbanks()
-            mfcc = tfbanks(sample)
+            attr = tfbanks(sample)
         elif library == 'sincnet':
             sincnet = frontend.SincNet()
-            mfcc = sincnet(sample)
+            attr = sincnet(sample)
         elif library == 'sincnetplus':
             sincnet_plus = frontend.SincNetPlus()
-            mfcc = sincnet_plus(sample)
+            attr = sincnet_plus(sample)
 
-        mfcc = np.array(mfcc).T
+        attr = np.array(attr)
 
-        m['mfcc'].append(mfcc.tolist())
+        m['attrs'].append(attr.tolist())
 
-        del mfcc
-        del sample
-
-    print(f'{dir} -> segments: {segments}')
+        del attr
+    del signal
     return m
-
-
-# In[4]:
-
-
-def object_mfcc_to_json(m, library):
-    data = {
-        "mapping": [],
-        "mfcc": [],
-        "labels": []
-    }
-
-    data['mapping'] = [file.replace('.wav', '') for i, file in enumerate(f)]
-
-    for i in m:
-        data['mfcc'].extend(i['mfcc'])
-        data['labels'].extend(i['labels'])
-
-    print('Writing')
-
-    JSON.create_json_file(
-        f'processed/leaf/{library}_{sampling_rate}.json', data, cls=NumpyEncoder)
-
-    del data
-
-
-# In[ ]:
 
 
 if __name__ == '__main__':
@@ -114,12 +80,10 @@ if __name__ == '__main__':
 
     for library in ['melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
         m = Parallel(n_jobs=num_cores, verbose=len(f))(
-            delayed(process_directory)(i, j, library) for j, i in enumerate(f) if j < 65)
-        object_mfcc_to_json(m, library)
+            delayed(process_directory)
+            (i, j, library)
+            for j, i in enumerate(f)
+            if n_audios and j < n_audios
+        )
+        Process.object_to_json(f'processed/leaf/{library}_{sampling_rate}.json', m, f)
         del m
-
-
-# In[ ]:
-
-
-# In[ ]:

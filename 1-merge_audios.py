@@ -1,64 +1,42 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[5]:
-
-
-from os import walk
 from joblib import Parallel, delayed
-import numpy as np
 import multiprocessing
-import librosa
-from deep_audio import Audio
-
-
-# In[6]:
-
+from numpy import array
+from deep_audio import Audio, Directory
 
 num_cores = multiprocessing.cpu_count()
-
-f = {}
-
 mypath = './archive/VCTK-Corpus/VCTK-Corpus/wav48'
 destpath = f'audios'
 
-for (_, dirnames, _) in walk(mypath):
-    for dir in dirnames:
-        f[dir] = []
-        for (_, _, filenames) in walk(mypath + '/' + dir):
-            f[dir].extend(filenames)
-            break
-    break
+n_audios = 40
 
-
-# In[7]:
+f = Directory.filenames_recursive(mypath)
 
 
 def process_directory(dir, n_rate):
     signal = []
 
     for j, audioname in enumerate(f[dir]):
-        # if j < 10:
         holder_signal, sr = Audio.read(
             f'{mypath}/{dir}/{audioname}', sr=n_rate)
 
-        intervals = librosa.effects.split(holder_signal, top_db=20)
+        signal.extend(Audio.trim(holder_signal, 20))
 
-        audio_temp = holder_signal[intervals[0][0]:intervals[-1][-1]]
+    signal = array(signal)
 
-        signal.extend(audio_temp)
-
-    signal = np.array(signal)
-
-    Audio.write(f'{destpath}/{n_rate}/{dir}.wav', signal, n_rate)
-
-
-# In[4]:
+    Audio.write(f'{destpath}/{n_rate}/{n_audios}/{dir}.wav', signal, n_rate)
 
 
 if __name__ == '__main__':
     # for j, i in enumerate(list(f.keys())):
-    #     if j < 1:
-    #         process_directory(i, j)
-    m = Parallel(n_jobs=num_cores, verbose=len(f.keys()))(
-        delayed(process_directory)(i, rate) for j, i in enumerate(list(f.keys())) for rate in [24000])
+    #     if n_audios and j < n_audios:
+    #         for rate in [24000]:
+    #             process_directory(i, rate)
+    Parallel(n_jobs=num_cores // 2, verbose=len(f.keys()))(
+        delayed(process_directory)(i, rate)
+        for j, i in enumerate(list(f.keys()))
+        if n_audios and j < n_audios
+        for rate in [24000]
+    )
