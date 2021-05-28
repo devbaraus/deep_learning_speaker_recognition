@@ -1,4 +1,6 @@
 venv
+nenv/
+logs/
 datasets
 archive
 datatest
@@ -12,8 +14,7 @@ model/**/*
 tests/**/*
 audios
 english-multispeaker-corpus-for-voice-cloning.zip
-__pycache__/
+**/__pycache__/
 .ipynb_checkpoints/**/*
-*.ipynb
-=*
 leaf-audio
+.spyproject/
