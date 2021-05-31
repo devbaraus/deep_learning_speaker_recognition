@@ -94,15 +94,15 @@ def process_directory(dir, index, library):
 
 
 if __name__ == '__main__':
-    for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
-        m = []
-        for j, i in enumerate(f):
-            if j < 5:
-                m.append(process_directory(i, j, library))
+    # for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
+    #     m = []
+    #     for j, i in enumerate(f):
+    #         if j < 5:
+    #             m.append(process_directory(i, j, library))
 
-        Process.object_to_json(m, library)
+    #     Process.object_to_json(m, library)
 
-    for library in ['melbanks']:
+    for library in ['melbanks', 'psf']:
         m = Parallel(n_jobs=num_cores, verbose=len(f))(
             delayed(process_directory)
             (i, j, library)
