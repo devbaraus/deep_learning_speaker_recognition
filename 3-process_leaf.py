@@ -15,9 +15,9 @@ path = f'audios/{sampling_rate}'
 f = Directory.filenames(path)
 
 # quantidade de segmentos
-n_segments = 10
+n_segments = 20
 # quantidade de audios
-n_audios = 40
+n_audios = 64
 
 
 def process_directory(dir, index, library):

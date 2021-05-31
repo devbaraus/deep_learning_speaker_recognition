@@ -10,7 +10,7 @@ num_cores = multiprocessing.cpu_count()
 mypath = './archive/VCTK-Corpus/VCTK-Corpus/wav48'
 destpath = f'audios'
 
-n_audios = 40
+n_audios = 64
 
 f = Directory.filenames_recursive(mypath)
 
