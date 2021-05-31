@@ -14,3 +14,7 @@ def object_to_json(filename, attrs, files):
     JSON.create_json_file(filename, data, cls=JSON.NumpyEncoder)
 
     del data
+
+
+def pad_accuracy(acc, pad=4):
+    return str(int(acc * 10000)).zfill(pad)

@@ -15,7 +15,7 @@ tests/**/*
 audios
 english-multispeaker-corpus-for-voice-cloning.zip
 **/__pycache__/
-.ipynb_checkpoints/**/*
+/.ipynb_checkpoints/
 leaf-audio
 .spyproject/
 espnet_model_zoo/

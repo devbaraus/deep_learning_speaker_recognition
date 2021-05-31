@@ -60,7 +60,7 @@ def process_directory(dir, index, library):
             sincnet_plus = frontend.SincNetPlus()
             attr = sincnet_plus(sample)
 
-        attr = np.array(attr)
+        attr = np.array(attr).T
 
         m['attrs'].append(attr.tolist())
 
@@ -85,5 +85,6 @@ if __name__ == '__main__':
             for j, i in enumerate(f)
             if n_audios and j < n_audios
         )
-        Process.object_to_json(f'processed/leaf/{library}_{sampling_rate}.json', m, f)
+        Process.object_to_json(
+            f'processed/leaf/{library}_{sampling_rate}.json', m, f)
         del m

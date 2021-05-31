@@ -36,7 +36,7 @@ def process_directory(dir, index, library):
 
     m = {
         'attrs': [],
-        'labels': [index] * segments
+        'labels': [index] * n_segments
     }
 
     for i in range(segments):
@@ -66,6 +66,7 @@ def process_directory(dir, index, library):
             sample = sample[newaxis, :]
             melfbanks = MelFilterbanks(sample_rate=rate)
             attr = melfbanks(sample)
+            attr = np.array(attr).T
 
         if library == 'psf':
             attr = mfcc(
@@ -83,8 +84,7 @@ def process_directory(dir, index, library):
                 appendEnergy=append_energy,
                 winfunc=hann
             )
-
-        attr = np.array(attr)
+            attr = np.array(attr)
 
         m['attrs'].append(attr.tolist())
 
@@ -94,15 +94,15 @@ def process_directory(dir, index, library):
 
 
 if __name__ == '__main__':
-    #     for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
-    #         m = []
-    #         for j, i in enumerate(f):
-    #             if j  < 5:
-    #                 m.append(process_directory(i, j, library))
+    for library in ['leaf', 'melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
+        m = []
+        for j, i in enumerate(f):
+            if j < 5:
+                m.append(process_directory(i, j, library))
 
-    #         object_mfcc_to_json(m, library)
+        Process.object_to_json(m, library)
 
-    for library in ['melbanks', 'psf']:
+    for library in ['melbanks']:
         m = Parallel(n_jobs=num_cores, verbose=len(f))(
             delayed(process_directory)
             (i, j, library)
@@ -112,6 +112,6 @@ if __name__ == '__main__':
         Process.object_to_json(
             f'processed/{library}_{n_audios}-{n_segments}_{sampling_rate}.json',
             m,
-            f
+            f,
         )
         del m

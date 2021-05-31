@@ -41,7 +41,7 @@ def filenames_recursive(path):
     return f
 
 
-def load_json_data(path, inputs_fieldname):
+def load_json_data(path, inputs_fieldname='attrs'):
     import json
     from numpy import array
 
