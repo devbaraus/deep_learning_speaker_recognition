@@ -34,7 +34,7 @@ if __name__ == '__main__':
     #     if n_audios and j < n_audios:
     #         for rate in [24000]:
     #             process_directory(i, rate)
-    Parallel(n_jobs=num_cores // 2, verbose=len(f.keys()))(
+    Parallel(n_jobs=num_cores, verbose=len(f.keys()))(
         delayed(process_directory)(i, rate)
         for j, i in enumerate(list(f.keys()))
         if n_audios and j < n_audios
