@@ -16,8 +16,8 @@ sampling_rate = 24000
 # quantidade de segmentos
 n_segments = 50
 # quantidade de audios
-n_audios = 40
-path = f'audios/{sampling_rate}/{n_audios}'
+n_audios = 64
+path = f'audios/{sampling_rate}'
 
 f = Directory.filenames(path)
 
