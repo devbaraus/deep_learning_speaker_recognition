@@ -16,7 +16,7 @@ runprocesses = ['perceptron', 'svm']
 n_audios = 40
 n_segments = 50
 # %%
-for library in ['melbanks']:
+for library in ['melbanks', 'psf']:
     # library = 'melbanks'
 
     DATASET_PATH = f'processed/{library}_{n_audios}-{n_segments}_{n_rate}.json'
