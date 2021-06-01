@@ -14,7 +14,7 @@ num_cores = multiprocessing.cpu_count()
 # amostra do sinal
 sampling_rate = 24000
 # quantidade de segmentos
-n_segments = 100
+n_segments = 50
 # quantidade de audios
 n_audios = 109
 path = f'audios/{sampling_rate}'

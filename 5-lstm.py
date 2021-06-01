@@ -14,7 +14,7 @@ from deep_audio import Directory, JSON
 
 # %%
 method_algo = 'melbanks'
-n_audios = 40
+n_audios = 109
 n_segments = 50
 model_algo = 'lstm'
 n_rate = 24000

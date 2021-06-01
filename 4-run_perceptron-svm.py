@@ -14,7 +14,7 @@ method_algo = 'mfcc'
 n_rate = 24000
 runprocesses = ['perceptron']
 n_audios = 109
-n_segments = 100
+n_segments = 50
 # %%
 for library in ['melbanks', 'psf']:
     # library = 'melbanks'
