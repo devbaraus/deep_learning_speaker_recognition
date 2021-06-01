@@ -12,7 +12,7 @@ from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 # %%
 method_algo = 'mfcc'
 n_rate = 24000
-runprocesses = ['perceptron', 'svm']
+runprocesses = ['perceptron']
 n_audios = 109
 n_segments = 100
 # %%
