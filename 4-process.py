@@ -14,9 +14,9 @@ num_cores = multiprocessing.cpu_count()
 # amostra do sinal
 sampling_rate = 24000
 # quantidade de segmentos
-n_segments = 50
+n_segments = 100
 # quantidade de audios
-n_audios = 64
+n_audios = 100
 path = f'audios/{sampling_rate}'
 
 f = Directory.filenames(path)
