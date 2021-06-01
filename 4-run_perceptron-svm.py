@@ -12,7 +12,7 @@ from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 # %%
 method_algo = 'mfcc'
 n_rate = 24000
-runprocesses = ['lstm']
+runprocesses = ['perceptron', 'lstm']
 n_audios = 109
 n_segments = 50
 # %%
@@ -23,6 +23,8 @@ for library in ['melbanks', 'psf']:
 
     X, y, mapping = Directory.load_json_data(
         DATASET_PATH)
+
+    X = np.squeeze(X, axis=3)
 
     sampling_rate = n_rate
     random_state = 42
