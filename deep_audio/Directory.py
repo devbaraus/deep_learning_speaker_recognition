@@ -53,3 +53,24 @@ def load_json_data(path, inputs_fieldname='attrs'):
         mapping = array(data['mapping'])
 
         return inputs, labels, mapping
+
+
+def processed_filename(language, library, rate, n_people=None, n_segments=None):
+    filename = f'{language}'
+    filename += '/processed/'
+    filename = verify_people_segments(filename, n_people, n_segments)
+    filename += f'{library}_{rate}.json'
+
+    return filename
+
+
+def verify_people_segments(filename='', people=None, segments=None):
+    if people:
+        filename += f'p{people}'
+        if segments:
+            filename += '_'
+    if segments:
+        filename += f's{segments}'
+    if people or people:
+        filename += '/'
+    return filename

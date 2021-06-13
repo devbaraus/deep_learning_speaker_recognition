@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def create_model_json_file(file, data):
     from deep_audio import Directory
 
@@ -51,3 +54,6 @@ def load_processed_data(path, inputs_fieldname='mfcc'):
     mapping = data['mapping']
 
     return inputs, targets, mapping
+
+
+
