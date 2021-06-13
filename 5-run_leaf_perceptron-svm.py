@@ -7,7 +7,7 @@ from sklearn.metrics import f1_score
 import tensorflow.keras as keras
 from sklearn import svm
 import numpy as np
-from deep_audio import Directory, JSON, NumpyEncoder
+from deep_audio import Directory, JSON, Process
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 
 
@@ -106,15 +106,12 @@ for library in ['melbanks', 'tfbanks', 'sincnet', 'sincnetplus']:
         }
 
         JSON.create_json_file(
-            f'tests/perceptron/{library}/info.json', dump_info, cls=NumpyEncoder)
+            f'tests/perceptron/{library}/info.json', dump_info)
 
     if 'svm' in runprocesses:
-        x_holder = []
 
-        for row in X:
-            x_holder.append(row.flatten())
 
-        X = np.array(x_holder)
+        X = Process.flatten_matrix()
 
         X_train, X_test, y_train, y_test = train_test_split(X,
                                                             y,

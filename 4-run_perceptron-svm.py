@@ -9,38 +9,51 @@ from sklearn import svm
 import numpy as np
 from deep_audio import Directory, JSON, Model, Process
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
-# %%
-method_algo = 'mfcc'
-n_rate = 24000
-runprocesses = ['lstm', 'perceptron']
-n_audios = 109
-n_segments = 50
-# %%
-for library in ['melbanks', 'psf']:
-    # library = 'melbanks'
 
-    DATASET_PATH = f'processed/{library}_{n_audios}-{n_segments}_{n_rate}.json'
+# %%
+# method_algo = 'mfcc'
+language = 'portuguese'
+n_rate = 24000
+runprocesses = ['perceptron']
+libraries = ['psf']
+n_audios = None
+n_segments = None
+# %%
+for library in libraries:
+
+    DATASET_PATH = Directory.processed_filename(language=language, rate=n_rate, library=library, n_people=n_audios,
+                                                n_segments=n_segments)
 
     X, y, mapping = Directory.load_json_data(
         DATASET_PATH)
 
-    X = np.squeeze(X, axis=3)
+    if library != 'psf':
+        X = np.squeeze(X, axis=3)
 
     sampling_rate = n_rate
     random_state = 42
     # %%
     if 'perceptron' in runprocesses:
-        X_train, X_test, y_train, y_test = train_test_split(X,
-                                                            y,
-                                                            test_size=0.2,
-                                                            stratify=y,
-                                                            random_state=random_state)
+        # X_train, X_test, y_train, y_test = train_test_split(X,
+        #                                                     y,
+        #                                                     test_size=0.2,
+        #                                                     stratify=y,
+        #                                                     random_state=random_state)
+        #
+        # X_train, X_valid, y_train, y_valid = train_test_split(X_train,
+        #                                                       y_train,
+        #                                                       test_size=0.2,
+        #                                                       stratify=y_train,
+        #                                                       random_state=random_state)
 
-        X_train, X_valid, y_train, y_valid = train_test_split(X_train,
-                                                              y_train,
-                                                              test_size=0.2,
-                                                              stratify=y_train,
-                                                              random_state=random_state)
+        # X_train, X_valid, X_test, y_train, y_valid, y_test = Process.mixed_selection_language(
+        #     'portuguese/processed/psf_24000.json',
+        #     'english/processed/p75_s50/psf_24000.json', test=True, flat=True)
+
+        X_train, X_valid, X_test, y_train, y_valid, y_test = Process.mixed_selection_representation(
+            'portuguese/processed/psf_24000.json',
+            'portuguese/processed/melbanks_24000.json', test=True)
+
 
         def build_model():
             # build the network architecture
@@ -69,6 +82,7 @@ for library in ['melbanks', 'psf']:
 
             return model
 
+
         kc = KerasClassifier(build_fn=build_model,
                              epochs=2000, batch_size=128, verbose=1, )
 
@@ -84,7 +98,7 @@ for library in ['melbanks', 'psf']:
         score_train = model.score(X_train, y_train)
 
         Model.dump_grid(
-            f'tests/perceptron/{library}_{n_audios}_{n_segments}/info_{Process.pad_accuracy(score_test)}_{time()}.json',
+            f'tests/pt/perceptron/{library}_{n_audios}_{n_segments}/info_{Process.pad_accuracy(score_test)}_{time()}.json',
             model=model,
             method='Grid Perceptron',
             sampling_rate=sampling_rate,
@@ -96,7 +110,7 @@ for library in ['melbanks', 'psf']:
             score_valid=score_valid
         )
 
-# %%
+    # %%
     if 'lstm' in runprocesses:
         X_train, X_test, y_train, y_test = train_test_split(X,
                                                             y,
@@ -109,6 +123,7 @@ for library in ['melbanks', 'psf']:
                                                               test_size=0.2,
                                                               stratify=y_train,
                                                               random_state=random_state)
+
 
         def build_model():
             # build the network architecture
@@ -131,6 +146,7 @@ for library in ['melbanks', 'psf']:
 
             return model
 
+
         kc = KerasClassifier(build_fn=build_model,
                              epochs=2000, batch_size=128, verbose=1, )
 
@@ -146,7 +162,7 @@ for library in ['melbanks', 'psf']:
         score_train = model.score(X_train, y_train)
 
         Model.dump_grid(
-            f'tests/lstm/{library}_{n_audios}_{n_segments}/info_{Process.pad_accuracy(score_test)}_{time()}.json',
+            f'tests/pt/lstm/{library}_{n_audios}_{n_segments}/info_{Process.pad_accuracy(score_test)}_{time()}.json',
             model=model,
             method='Grid LSTM',
             sampling_rate=sampling_rate,
@@ -159,19 +175,13 @@ for library in ['melbanks', 'psf']:
         )
     # %%
     if 'svm' in runprocesses:
+        # X_train, X_valid, X_test, y_train, y_valid, y_test = Process.mixed_selection_language(
+        #     'portuguese/processed/psf_24000.json',
+        #     'english/processed/p75_s50/psf_24000.json', test=True, flat=True)
 
-        x_holder = []
-
-        for row in X:
-            x_holder.append(row.flatten())
-
-        X = np.array(x_holder)
-
-        X_train, X_test, y_train, y_test = train_test_split(X,
-                                                            y,
-                                                            test_size=0.2,
-                                                            stratify=y,
-                                                            random_state=random_state)
+        X_train, X_valid, X_test, y_train, y_valid, y_test = Process.mixed_selection_representation(
+            'portuguese/processed/psf_24000.json',
+            'portuguese/processed/melbanks_24000.json', test=True)
 
         param_grid = {
             'C': [10],
@@ -180,7 +190,7 @@ for library in ['melbanks', 'psf']:
             'decision_function_shape': ['ovo']
         }
 
-        model = GridSearchCV(svm.SVC(), param_grid, cv=3,
+        model = GridSearchCV(svm.SVC(), param_grid, cv=5,
                              refit=True, verbose=2, n_jobs=-1)
 
         model.fit(X_train, y_train)
@@ -190,7 +200,7 @@ for library in ['melbanks', 'psf']:
         score_train = model.score(X_train, y_train)
 
         Model.dump_grid(
-            f'tests/svm/{library}_{n_audios}_{n_segments}/info_{Process.pad_accuracy(score_test)}_{time()}.json',
+            f'tests/mixed/svm/{library}_{n_audios}_{n_segments}/info_{Process.pad_accuracy(score_test)}_{time()}.json',
             model=model,
             method='Grid Perceptron',
             sampling_rate=sampling_rate,

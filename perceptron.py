@@ -3,47 +3,59 @@
 # %%
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dropout, LSTM, Dense
+from tensorflow.keras.layers import Dense, Flatten
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import time
 import matplotlib.pyplot as plt
 from numpy import squeeze, max
-from deep_audio import Directory, JSON
+from deep_audio import Directory, JSON, Process
 
 # %%
-model_algo = 'lstm'
-language = 'english'
+model_algo = 'perceptron'
+language = 'portuguese'
 library = 'psf'
-n_people = 75
-n_segments = 50
+n_people = None
+n_segments = None
 n_rate = 24000
 
 filename_ps = Directory.verify_people_segments(people=n_people, segments=n_segments)
 
-DATASET_PATH = Directory.processed_filename(language, library, n_rate, n_people, n_segments)
+# DATASET_PATH = Directory.processed_filename(language, library, n_rate, n_people, n_segments)
 
-X, y, mapping = Directory.load_json_data(DATASET_PATH)
+# X, y, mapping = Directory.load_json_data(DATASET_PATH)
 
-if library != 'psf':
-    X = squeeze(X, axis=3)
+# if library != 'psf':
+#     X = squeeze(X, axis=3)
 
 # %%
 # SPLIT DOS DADOS
 random_state = 42
 
 # split data into train and test set
-X_train, X_test, y_train, y_test = train_test_split(X,
-                                                    y,
-                                                    test_size=0.2,
-                                                    stratify=y,
-                                                    random_state=random_state)
+# X_train, X_test, y_train, y_test = train_test_split(X,
+#                                                     y,
+#                                                     test_size=0.2,
+#                                                     stratify=y,
+#                                                     random_state=random_state)
+#
+# X_train, X_valid, y_train, y_valid = train_test_split(X_train,
+#                                                       y_train,
+#                                                       test_size=0.2,
+#                                                       stratify=y_train,
+#                                                       random_state=random_state)
 
-X_train, X_valid, y_train, y_valid = train_test_split(X_train,
-                                                      y_train,
-                                                      test_size=0.2,
-                                                      stratify=y_train,
-                                                      random_state=random_state)
+# X_train, X_valid, X_test, y_train, y_valid, y_test = Process.mixed_selection_language(
+#     'portuguese/processed/psf_24000.json',
+#     'english/processed/p75_s50/psf_24000.json', test=True, flat=True)
+
+X_train, X_valid, X_test, y_train, y_valid, y_test = Process.mixed_selection_representation(
+    'portuguese/processed/psf_24000.json',
+    'portuguese/processed/melbanks_24000.json', test=True, )
+
+mapping = set(y_test)
+
+print(set(y_train) == set(y_test), set(y_train) == set(y_valid), len(mapping), len(set(y_train)), len(set(y_valid)))
 
 
 # %%
@@ -53,11 +65,11 @@ def build_model(learning_rate=0.0001):
     # build the network architecture
     model = Sequential([
         # 1st hidden layer
-        LSTM(48, input_shape=[X.shape[1], X.shape[2]], return_sequences=True),
-        LSTM(32),
-        Dropout(.5),
-        Dense(24, activation='relu'),
-        Dense(len(mapping), activation='softmax'),
+        Flatten(input_shape=[X_train.shape[0], X_train.shape[1]]),
+        Dense(512, activation='relu'),
+        Dense(256, activation='relu'),
+        Dense(128, activation='relu'),
+        Dense(len(mapping) + 2, activation='softmax'),
     ])
 
     optimizer = Adam(learning_rate=learning_rate)
@@ -71,7 +83,7 @@ def build_model(learning_rate=0.0001):
 
 # %%
 # CRIA O MODELO
-learning_rate = 0.1
+learning_rate = 0.0001
 model = build_model(learning_rate=learning_rate)
 
 # %%
@@ -145,6 +157,7 @@ JSON.create_json_file(f'{language}/models/{model_algo}/{library}/{filename_ps}{t
 
 # %%
 higher_accuracy = str(int(higher_accuracy[1] * 10000)).zfill(4)
+
 # %%
 # RENOMEIA A PASTA
 Directory.rename_directory(f'{language}/models/{model_algo}/{library}/{filename_ps}{timestamp}',
