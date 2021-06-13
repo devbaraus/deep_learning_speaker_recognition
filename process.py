@@ -98,7 +98,6 @@ def process_directory(dir, index, library):
 
 
 if __name__ == '__main__':
-    filename = Directory.processed_filename(language, library, sampling_rate, n_audios, n_segments)
 
     # for library in libraries:
     #     m = []
@@ -110,6 +109,8 @@ if __name__ == '__main__':
 
 
     for library in libraries:
+        filename = Directory.processed_filename(language, library, sampling_rate, n_audios, n_segments)
+
         m = Parallel(n_jobs=num_cores, verbose=len(f))(
             delayed(process_directory)
             (i, j, library)
