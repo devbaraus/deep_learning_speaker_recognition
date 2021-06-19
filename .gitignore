@@ -123,5 +123,9 @@ audios_pt/
 audios_en/
 
 # Processed folders
-english/
-portuguese/
+english/audios/
+english/processed/
+portuguese/audios/
+portuguese/processed/
+
+/**/*.h5

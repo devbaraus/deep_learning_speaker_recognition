@@ -1,0 +1,31 @@
+{
+  "learning_rate": 0.0001,
+  "language": "mixed",
+  "model_algo": "perceptron",
+  "library": "psf",
+  "people": null,
+  "segments": null,
+  "rate": 24000,
+  "sizes": [
+    [
+      10794,
+      234,
+      13
+    ],
+    [
+      3599,
+      234,
+      13
+    ],
+    [
+      65,
+      234,
+      13
+    ]
+  ],
+  "scores": [
+    1.0,
+    0.8082800507545471,
+    0.26153847575187683
+  ]
+}

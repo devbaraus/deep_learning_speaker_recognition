@@ -58,6 +58,50 @@ mapping = set(y_test)
 print(set(y_train) == set(y_test), set(y_train) == set(y_valid), len(mapping), len(set(y_train)), len(set(y_valid)))
 
 
+if language == 'mixed' and library == 'mixed':
+    first_folder = Directory.processed_filename(
+        'portuguese', 'psf', n_rate, None, None)
+    second_folder = Directory.processed_filename(
+        'portuguese', 'melbanks', n_rate, None, None)
+    third_folder = Directory.processed_filename(
+        'english', 'psf', n_rate, n_people, n_segments)
+    fourth_folder = Directory.processed_filename(
+        'english', 'melbanks', n_rate, n_people, n_segments)
+
+    X_train, X_valid, X_test, y_train, y_valid, y_test = Process.mixed_selection(
+        first_folder, second_folder, third_folder, fourth_folder,
+        validation=True,
+        test=False
+    )
+elif language == 'mixed':
+    print('MIXED LANGUAGE')
+    portuguese_folder = Directory.processed_filename(
+        'portuguese', library, n_rate, None, None)
+    english_folder = Directory.processed_filename(
+        'english', library, n_rate, n_people, n_segments)
+
+    X_train, X_valid, X_test, y_train, y_valid, y_test = Process.mixed_selection_language(
+        portuguese_folder=portuguese_folder,
+        english_folder=english_folder,
+        validation=True
+    )
+elif library == 'mixed':
+    first_folder = Directory.processed_filename(
+        language, 'psf', n_rate, n_people, n_segments)
+    second_folder = Directory.processed_filename(
+        language, 'melbanks', n_rate, n_people, n_segments)
+
+    X_train, X_valid, X_test, y_train, y_valid, y_test = Process.mixed_selection_representation(
+        first_folder,
+        second_folder,
+        validation=True,
+        test=False)
+else:
+    X_train, X_valid, X_test, y_train, y_valid, y_test = Process.selection(
+        DATASET_PATH)
+
+
+mapping = set(y_train)
 # %%
 
 
