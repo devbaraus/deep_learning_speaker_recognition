@@ -8,24 +8,30 @@ from tensorflow import newaxis
 from scipy.signal.windows import hann
 from leaf_audio.frontend import MelFilterbanks
 from python_speech_features import mfcc
-from deep_audio import Directory, Audio, Process
+from deep_audio import Directory, Audio, Process, Terminal
+import sys
+
+# %%
+args = Terminal.get_args(sys.argv[1:])
 
 # %%
 num_cores = multiprocessing.cpu_count()
 # amostra do sinal
 sampling_rate = 24000
 # quantidade de segmentos
-n_segments = 50
+n_segments = args['segments'] or None
 # quantidade de audios
-n_audios = 75
+n_audios = args['people'] or None
 # bibliotecas
-libraries = ['melbanks', 'psf']
+libraries = args['representation'].split(',') or ['melbanks', 'psf']
 # lingua
-language = 'english'
+language = args['language'] or 'portuguese'
 # caminho para os audios
 path = f'{language}/audios/{sampling_rate}'
 
 f = Directory.filenames(path)
+
+# %%
 
 
 def process_directory(dir, index, library):
@@ -107,15 +113,15 @@ if __name__ == '__main__':
 
     #     Process.object_to_json(m, library)
 
-
     for library in libraries:
-        filename = Directory.processed_filename(language, library, sampling_rate, n_audios, n_segments)
+        filename = Directory.processed_filename(
+            language, library, sampling_rate, n_audios, n_segments)
 
         m = Parallel(n_jobs=num_cores, verbose=len(f))(
             delayed(process_directory)
             (i, j, library)
             for j, i in enumerate(f)
-            if n_audios and j < n_audios
+            if n_audios == None or j < n_audios
         )
         Process.object_to_json(
             filename,

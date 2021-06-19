@@ -1,6 +1,7 @@
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
+from numpy.core.fromnumeric import squeeze
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, Flatten
@@ -8,55 +9,32 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import time
 import matplotlib.pyplot as plt
-from numpy import squeeze, max
-from deep_audio import Directory, JSON, Process
+from numpy import lib, max
+from deep_audio import Directory, JSON, Process, Terminal
+
+args = Terminal.get_args()
+
 
 # %%
 model_algo = 'perceptron'
-language = 'portuguese'
-library = 'psf'
-n_people = None
-n_segments = None
+language = args['language'] or 'portuguese'
+library = args['representation'] or 'psf'
+n_people = args['people'] or None
+n_segments = args['segments'] or None
 n_rate = 24000
+random_state = 42
 
-filename_ps = Directory.verify_people_segments(people=n_people, segments=n_segments)
+filename_ps = Directory.verify_people_segments(
+    people=n_people, segments=n_segments)
 
-# DATASET_PATH = Directory.processed_filename(language, library, n_rate, n_people, n_segments)
+# %%
+global X_train, X_valid, X_test, y_train, y_valid, y_test
 
-# X, y, mapping = Directory.load_json_data(DATASET_PATH)
-
-# if library != 'psf':
-#     X = squeeze(X, axis=3)
+DATASET_PATH = Directory.processed_filename(
+    language, library, n_rate, n_people, n_segments)
 
 # %%
 # SPLIT DOS DADOS
-random_state = 42
-
-# split data into train and test set
-# X_train, X_test, y_train, y_test = train_test_split(X,
-#                                                     y,
-#                                                     test_size=0.2,
-#                                                     stratify=y,
-#                                                     random_state=random_state)
-#
-# X_train, X_valid, y_train, y_valid = train_test_split(X_train,
-#                                                       y_train,
-#                                                       test_size=0.2,
-#                                                       stratify=y_train,
-#                                                       random_state=random_state)
-
-# X_train, X_valid, X_test, y_train, y_valid, y_test = Process.mixed_selection_language(
-#     'portuguese/processed/psf_24000.json',
-#     'english/processed/p75_s50/psf_24000.json', test=True, flat=True)
-
-X_train, X_valid, X_test, y_train, y_valid, y_test = Process.mixed_selection_representation(
-    'portuguese/processed/psf_24000.json',
-    'portuguese/processed/melbanks_24000.json', test=True, )
-
-mapping = set(y_test)
-
-print(set(y_train) == set(y_test), set(y_train) == set(y_valid), len(mapping), len(set(y_train)), len(set(y_valid)))
-
 
 if language == 'mixed' and library == 'mixed':
     first_folder = Directory.processed_filename(
@@ -107,13 +85,16 @@ mapping = set(y_train)
 
 def build_model(learning_rate=0.0001):
     # build the network architecture
+    input_shape = [X_train.shape[1]] if library == 'mixed' else [
+        X_train.shape[1], X_train.shape[2]]
+
     model = Sequential([
         # 1st hidden layer
-        Flatten(input_shape=[X_train.shape[0], X_train.shape[1]]),
+        Flatten(input_shape=input_shape),
         Dense(512, activation='relu'),
         Dense(256, activation='relu'),
         Dense(128, activation='relu'),
-        Dense(len(mapping) + 2, activation='softmax'),
+        Dense(len(mapping), activation='softmax'),
     ])
 
     optimizer = Adam(learning_rate=learning_rate)
@@ -135,7 +116,8 @@ model = build_model(learning_rate=learning_rate)
 
 timestamp = int(time.time())
 
-Directory.create_directory(f'{language}/models/{model_algo}/{library}/{filename_ps}{timestamp}')
+Directory.create_directory(
+    f'{language}/models/{model_algo}/{library}/{filename_ps}{timestamp}')
 
 JSON.create_json_file(
     f'{language}/models/{model_algo}/{library}/{filename_ps}{timestamp}/model_structure.json', model.to_json())
@@ -177,7 +159,8 @@ plt.title('model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'val'], loc='upper left')
-plt.savefig(f'{language}/models/{model_algo}/{library}/{filename_ps}{timestamp}/graph_loss.png')
+plt.savefig(
+    f'{language}/models/{model_algo}/{library}/{filename_ps}{timestamp}/graph_loss.png')
 plt.close()
 
 # %%
@@ -197,7 +180,8 @@ dump_info = {
     'scores': [max(history.history['accuracy']), max(history.history['val_accuracy']), higher_accuracy[1]]
 }
 
-JSON.create_json_file(f'{language}/models/{model_algo}/{library}/{filename_ps}{timestamp}/info.json', dump_info)
+JSON.create_json_file(
+    f'{language}/models/{model_algo}/{library}/{filename_ps}{timestamp}/info.json', dump_info)
 
 # %%
 higher_accuracy = str(int(higher_accuracy[1] * 10000)).zfill(4)

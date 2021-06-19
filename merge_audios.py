@@ -4,15 +4,21 @@
 from joblib import Parallel, delayed
 import multiprocessing
 from numpy import array
-from deep_audio import Audio, Directory
+from deep_audio import Audio, Directory, Terminal
+import sys
+
+#%%
+args = Terminal.get_args(sys.argv[1:])
 
 # %%
 num_cores = multiprocessing.cpu_count()
-origin_path = './audios_en'
-dest_path = f'english/audios'
+language = args['language'] or 'portguese'
+origin_path = f'base_{language}'
+dest_path = f'{language}/audios'
 s_rate = [24000]
-n_audios = None
+n_audios = args['people'] or None
 
+print(dest_path)
 # %%
 
 f = Directory.filenames_recursive(origin_path)
