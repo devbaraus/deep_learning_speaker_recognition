@@ -71,6 +71,6 @@ def verify_people_segments(filename='', people=None, segments=None):
             filename += '_'
     if segments:
         filename += f's{segments}'
-    if people or people:
+    if people or segments:
         filename += '/'
     return filename

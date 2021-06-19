@@ -1,0 +1,28 @@
+{
+  "learning_rate": 0.0001,
+  "language": "english",
+  "model_algo": "perceptron",
+  "library": "mixed",
+  "people": 80,
+  "segments": 80,
+  "rate": 24000,
+  "sizes": [
+    [
+      3840,
+      23042
+    ],
+    [
+      1280,
+      23042
+    ],
+    [
+      1280,
+      23042
+    ]
+  ],
+  "scores": [
+    1.0,
+    0.7242187261581421,
+    0.707812488079071
+  ]
+}

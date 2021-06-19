@@ -1,0 +1,31 @@
+{
+  "learning_rate": 0.0001,
+  "language": "english",
+  "model_algo": "perceptron",
+  "library": "psf",
+  "people": 109,
+  "segments": 65,
+  "rate": 24000,
+  "sizes": [
+    [
+      4251,
+      234,
+      13
+    ],
+    [
+      1417,
+      234,
+      13
+    ],
+    [
+      1417,
+      234,
+      13
+    ]
+  ],
+  "scores": [
+    1.0,
+    0.18983767926692963,
+    0.014114325866103172
+  ]
+}

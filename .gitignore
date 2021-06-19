@@ -119,6 +119,8 @@ dmypy.json
 .idea/
 
 # Audio Datasets
+audios_pt/
+audios_en/
 base_english/
 base_portuguese/
 

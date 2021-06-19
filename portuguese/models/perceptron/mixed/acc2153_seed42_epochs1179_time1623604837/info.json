@@ -1,0 +1,28 @@
+{
+  "learning_rate": 0.0001,
+  "language": "portuguese",
+  "model_algo": "perceptron",
+  "library": "mixed",
+  "people": null,
+  "segments": null,
+  "rate": 24000,
+  "sizes": [
+    [
+      193,
+      23042
+    ],
+    [
+      65,
+      23042
+    ],
+    [
+      65,
+      23042
+    ]
+  ],
+  "scores": [
+    1.0,
+    0.2461538463830948,
+    0.2153846174478531
+  ]
+}
