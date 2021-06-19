@@ -13,6 +13,7 @@ def create_json_file(file, data, indent=2, cls=None):
         json.dump(data, fp, indent=indent, cls=cls)
 
 
+
 class NumpyEncoder(json.JSONEncoder):
 
     def default(self, obj):

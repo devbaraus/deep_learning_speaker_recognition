@@ -74,3 +74,16 @@ def verify_people_segments(filename='', people=None, segments=None):
     if people or segments:
         filename += '/'
     return filename
+
+
+def create_file(file, data, is_array=False, indent=2, cls=None):
+    directory = '/'.join(file.split('/')[:-1])
+
+    create_directory(directory)
+
+    with open(file, "w") as fp:
+        if is_array:
+            for row in data:
+                fp.write(row + '\n')
+        else:
+            fp.write(data)

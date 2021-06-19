@@ -19,6 +19,31 @@ def object_to_json(filename, attrs, files):
     del data
 
 
+def object_to_attention(filename, attrs, files):
+    from deep_audio import Directory
+    data = {
+        'labels': [],
+        'attrs': [],
+        'mapping': [file.replace('.wav', '') for _, file in enumerate(files)]
+    }
+
+    for i in attrs:
+        data['attrs'].extend(i['attrs'])
+        data['labels'].extend(i['labels'])
+
+    rows = []
+
+    for info, i in enumerate(data['labels']):
+        row = f'{info} qid:{info} '
+        info_attrs = flatten_matrix(data['attrs'][i])
+        for info_attr, j in enumerate(info_attrs):
+            row += f'{j}:{info_attr} '
+        rows.append(row)
+
+    Directory.create_file(filename, rows )
+    del data
+
+
 def pad_accuracy(acc, pad=4):
     return str(int(acc * 10000)).zfill(pad)
 
