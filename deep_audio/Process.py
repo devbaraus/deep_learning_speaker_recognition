@@ -92,7 +92,7 @@ def selection(folder, valid_size=0.25, test_size=0.2, random_state=42, flat=Fals
     return X_train, X_valid, X_test, y_train, y_valid, y_test
 
 
-def mixed_selection(first_folder, second_folder, third_folder, fourth_folder, validation=False, test=False,
+def mixed_selection(first_folder, second_folder, third_folder, fourth_folder, lm_validation=False, lm_test=False,rm_validation=False, rm_test=False,
                     valid_size=0.25,
                     test_size=0.2,
                     random_state=42):
@@ -100,6 +100,7 @@ def mixed_selection(first_folder, second_folder, third_folder, fourth_folder, va
     from deep_audio import Directory
     from sklearn.model_selection import train_test_split
     from numpy import concatenate
+    import numpy as np
 
     X_first, y_first, _ = Directory.load_json_data(first_folder)
     X_second, y_second, _ = Directory.load_json_data(second_folder)
@@ -138,14 +139,14 @@ def mixed_selection(first_folder, second_folder, third_folder, fourth_folder, va
     X_train_first = concatenate((X_train_first, X_train_second), axis=1)
     y_train = y_train_first
 
-    if not validation:
+    if not rm_validation:
         X_valid_first = X_valid_first
     else:
         X_valid_first = concatenate((X_valid_first, X_valid_second), axis=1)
 
     y_valid = y_valid_first
 
-    if not test:
+    if not rm_test:
         X_test_first = X_test_first
     else:
         X_test_first = concatenate((X_test_first, X_test_second), axis=1)
@@ -178,32 +179,32 @@ def mixed_selection(first_folder, second_folder, third_folder, fourth_folder, va
 
     X_train_third = concatenate((X_train_third, X_train_fourth), axis=1)
 
-    if not validation:
+    if not rm_validation:
         X_valid_third = X_valid_third
     else:
         X_valid_third = concatenate((X_valid_third, X_valid_fourth), axis=1)
 
-    if not test:
+    if not rm_test:
         X_test_third = X_test_third
     else:
         X_test_third = concatenate((X_test_third, X_test_fourth), axis=1)
 
     X_train = concatenate((X_train_first, X_train_third), axis=0)
-    y_train = concatenate((y_train_first, y_train_third), axis=0)
+    y_train = concatenate((y_train_first, y_train_third + np.max(y_train_first) + 1), axis=0)
 
-    if not validation:
+    if not lm_validation:
         X_valid = X_valid_first
         y_valid = y_valid_first
     else:
         X_valid = concatenate((X_valid_first, X_valid_third), axis=0)
-        y_valid = concatenate((y_valid_first, y_valid_third), axis=0)
+        y_valid = concatenate((y_valid_first, y_valid_third + np.max(y_valid_first) + 1) , axis=0)
 
-    if not test:
+    if not lm_test:
         X_test = X_test_first
         y_test = y_test_first
     else:
         X_test = concatenate((X_test_first, X_test_third), axis=0)
-        y_test = concatenate((y_test_first, y_test_third), axis=0)
+        y_test = concatenate((y_test_first, y_test_third + np.max(y_test_first) + 1), axis=0)
 
     return X_train, X_valid, X_test, y_train, y_valid, y_test
 
@@ -273,7 +274,7 @@ def mixed_selection_language(portuguese_folder, english_folder, validation=False
     global X_train, y_train, X_valid, y_valid, X_test, y_test
     from deep_audio import Directory
     from sklearn.model_selection import train_test_split
-    from numpy import concatenate, squeeze
+    from numpy import concatenate, squeeze, max
 
     X_portuguese, y_portuguese, _ = Directory.load_json_data(
         portuguese_folder)
@@ -312,20 +313,20 @@ def mixed_selection_language(portuguese_folder, english_folder, validation=False
                                                                       random_state=random_state)
 
     X_train = concatenate((X_train_pt, X_train_en), axis=0)
-    y_train = concatenate((y_train_pt, y_train_en), axis=0)
+    y_train = concatenate((y_train_pt, y_train_en + max(y_train_pt) + 1), axis=0)
 
     if not validation:
         X_valid = X_valid_pt
         y_valid = y_valid_pt
     else:
         X_valid = concatenate((X_valid_pt, X_valid_en), axis=0)
-        y_valid = concatenate((y_valid_pt, y_valid_en), axis=0)
+        y_valid = concatenate((y_valid_pt, y_valid_en + max(y_valid_pt) + 1), axis=0)
 
     if not test:
         X_test = X_test_pt
         y_test = y_test_pt
     else:
         X_test = concatenate((X_test_pt, X_test_en), axis=0)
-        y_test = concatenate((y_test_pt, y_test_en), axis=0)
+        y_test = concatenate((y_test_pt, y_test_en + max(y_test_pt) + 1), axis=0)
 
     return X_train, X_valid, X_test, y_train, y_valid, y_test

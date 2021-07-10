@@ -1,7 +1,8 @@
 # %%
 from time import time
 from sklearn.model_selection import GridSearchCV
-from sklearn import svm
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
+from tensorflow import keras
 from deep_audio import Directory, Process, Terminal, Model
 # %%
 args = Terminal.get_args()
@@ -12,6 +13,13 @@ people = args['people']
 segments = args['segments']
 sampling_rate = 24000
 random_state = 42
+
+# language = 'mixed'
+# library = 'psf'
+# people = None
+# segments = None
+# sampling_rate = 24000
+# random_state = 42
 # %%
 global X_train, X_valid, X_test, y_train, y_valid, y_test
 
@@ -44,7 +52,7 @@ elif language == 'mixed':
     X_train, X_valid, X_test, y_train, y_valid, y_test = Process.mixed_selection_language(
         portuguese_folder=portuguese_folder,
         english_folder=english_folder,
-        flat=True
+        flat=False
     )
 elif library == 'mixed':
     first_folder = Directory.processed_filename(
@@ -58,17 +66,37 @@ elif library == 'mixed':
         test=True)
 else:
     X_train, X_valid, X_test, y_train, y_valid, y_test = Process.selection(
-        file_path, flat=True)
+        file_path, flat=False)
 
+#%%
 
-param_grid = {
-    'C': [10],
-    'kernel': ['linear'],
-    'decision_function_shape': ['ovo']
-}
+def build_model():
+    # build the network architecture
+    model = keras.Sequential()
+    if library != 'mixed':
+        model.add(keras.layers.Flatten(input_shape=(X_train.shape[1], X_train.shape[2])))
 
-model = GridSearchCV(svm.SVC(), param_grid, cv=5,
-                     refit=True, verbose=2, n_jobs=-1)
+    model.add(keras.layers.Dense(512, activation='relu'))
+    model.add(keras.layers.Dense(256, activation='relu'))
+    model.add(keras.layers.Dense(128, activation='relu'))
+    model.add(keras.layers.Dense(len(set(y_train)), activation='softmax'))
+
+    optimizer = keras.optimizers.Adam(learning_rate=0.0001)
+
+    model.compile(optimizer=optimizer,
+                    loss='sparse_categorical_crossentropy',
+                    metrics=['accuracy'])
+
+    return model
+
+kc = KerasClassifier(build_fn=build_model,
+                        epochs=2000, batch_size=128, verbose=2)
+
+param_grid = {}
+
+model = GridSearchCV(
+    estimator=kc, param_grid=param_grid, n_jobs=-1, cv=5)
+
 
 model.fit(X_train, y_train)
 
@@ -85,10 +113,10 @@ filename_ps = Directory.verify_people_segments(
 
 # SALVA ACURÁCIAS E PARAMETROS
 Model.dump_grid(
-    f'{language}/models/svm/{library}/{filename_ps}{Process.pad_accuracy(score_test)}_{abs(time())}/info.json',
+    f'{language}/models/gperceptron/{library}/{filename_ps}{Process.pad_accuracy(score_test)}_{abs(time())}/info.json',
     model=model,
     language=language,
-    method='Support Vector Machines',
+    method='Perceptron',
     sampling_rate=sampling_rate,
     seed=random_state,
     library=library,

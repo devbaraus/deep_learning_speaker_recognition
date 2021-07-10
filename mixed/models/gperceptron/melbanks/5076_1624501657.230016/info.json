@@ -1,0 +1,58 @@
+{
+  "method": "Perceptron",
+  "language": "mixed",
+  "seed": 42,
+  "library": "melbanks",
+  "sample_rate": 24000,
+  "sizes": [
+    10794,
+    65,
+    65
+  ],
+  "score_train": 1.0,
+  "score_test": 0.5076923370361328,
+  "timestamp": 1624501657.2318428,
+  "params": {},
+  "cv_results": {
+    "mean_fit_time": [
+      28029.643748235703
+    ],
+    "std_fit_time": [
+      79.899823597236
+    ],
+    "mean_score_time": [
+      2.0372231006622314
+    ],
+    "std_score_time": [
+      1.0166087703690443
+    ],
+    "params": [
+      {}
+    ],
+    "split0_test_score": [
+      0.8003705143928528
+    ],
+    "split1_test_score": [
+      0.874015748500824
+    ],
+    "split2_test_score": [
+      0.8712366819381714
+    ],
+    "split3_test_score": [
+      0.9008800387382507
+    ],
+    "split4_test_score": [
+      0.8827618360519409
+    ],
+    "mean_test_score": [
+      0.8658529639244079
+    ],
+    "std_test_score": [
+      0.03434056666680143
+    ],
+    "rank_test_score": [
+      1
+    ]
+  },
+  "model_file": null
+}

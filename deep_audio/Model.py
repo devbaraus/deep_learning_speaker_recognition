@@ -12,13 +12,14 @@ def create_model_json_file(file, data):
         json_file.write(data)
 
 
-def dump_grid(file, model, method, seed, library, sizes, score_train, score_test, sampling_rate, score_valid=None,
+def dump_grid(file, model, language, method, seed, library, sizes, score_train, score_test, sampling_rate, score_valid=None,
               model_file=None):
     from time import time
     from deep_audio import JSON
 
     dump_info = {
         'method': method,
+        'language': language,
         'seed': seed,
         'library': library,
         'sample_rate': sampling_rate,
